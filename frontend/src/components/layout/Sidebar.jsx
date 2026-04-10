@@ -21,7 +21,7 @@ const Sidebar = () => {
           <Link
             key={cat}
             to={`/category/${cat.toLowerCase()}`}
-            className="p-2 rounded hover:bg-gray-100"
+            className="p-2 rounded hover:bg-slate-800"
           >
             {cat}
           </Link>
