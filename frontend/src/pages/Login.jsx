@@ -33,7 +33,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
+    <div className="max-h-screen bg-slate-900 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="mb-8">
@@ -61,7 +61,7 @@ const Login = () => {
                     message: "Enter a valid email address",
                   },
                 })}
-                className={`w-full pl-11 pr-4 py-2.5 bg-gray-900 border text-white placeholder-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
+                className={`w-full pl-11 pr-4 py-2.5 bg-slate-900 border text-white placeholder-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
                   errors.email
                     ? "border-red-600 focus:ring-red-500"
                     : "border-gray-800 hover:border-gray-700 focus:border-gray-700 focus:ring-white"
