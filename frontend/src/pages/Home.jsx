@@ -16,6 +16,7 @@ const Home = () => {
         <h1 className="text-4xl font-bold">
           Find Local Services Near You
         </h1>
+        
 
         <Link
           to="/explore"
