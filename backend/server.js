@@ -1,9 +1,22 @@
-require("dotenv").config(); 
+require("dotenv").config();
+
 const app = require("./src/app.js");
 const connectDB = require("./src/db/db.js");
 
-connectDB();
+async function startServer() {
+  try {
+    // ✅ Connect Database
+    await connectDB();
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000, http://localhost:3000");
-});
+    // ✅ Start Server
+    app.listen(3000, () => {
+      console.log("Server is running on http://localhost:3000");
+    });
+
+  } catch (error) {
+    console.error("Server startup error:", error.message);
+    process.exit(1); // stop app if DB fails
+  }
+}
+
+startServer();
