@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="bg-black text-white border-t mt-10">
+    <footer className="bg-black text-white border-t border-zinc-700 mt-10">
       <div className="container mx-auto px-4 py-6 text-center text-gray-500">
         <p>© {new Date().getFullYear()} LocalFinder</p>
 

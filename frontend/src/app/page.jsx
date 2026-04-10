@@ -71,7 +71,7 @@ const Page = () => {
             <Link
               key={cat}
               to={`/category/${cat.toLowerCase()}`}
-              className="p-4 bg-white rounded-xl shadow hover:shadow-md transition"
+              className="p-4 bg-white rounded-xl shadow hover:shadow-md transition text-black"
             >
               {cat}
             </Link>
