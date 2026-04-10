@@ -13,11 +13,8 @@ const categories = [
 
 const Sidebar = () => {
   return (
-    <aside className="w-64 bg-white border-r p-4 h-screen sticky top-0">
-
-      <h2 className="font-semibold mb-4">
-        Categories
-      </h2>
+    <aside className="w-64 border-r p-4 h-screen sticky top-0">
+      <h2 className="font-semibold mb-4">Categories</h2>
 
       <div className="flex flex-col gap-2">
         {categories.map((cat) => (
@@ -30,7 +27,6 @@ const Sidebar = () => {
           </Link>
         ))}
       </div>
-
     </aside>
   );
 };
