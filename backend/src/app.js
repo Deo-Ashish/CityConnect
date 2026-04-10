@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const connectDB = require("./db/db");
 
 const authRoutes = require("./routes/auth.routes");
@@ -14,6 +15,7 @@ connectDB();
 
 // ✅ middlewares
 app.use(express.json());
+app.use(cors());
 app.use(cookieParser());
 
 // ✅ routes

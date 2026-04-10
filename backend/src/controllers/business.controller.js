@@ -56,6 +56,44 @@ exports.getAllBusinesses = async (req, res) => {
 
 
 
+// 🔍 Search Businesses
+exports.searchBusinesses = async (req, res) => {
+  try {
+    const { category, q } = req.query;
+
+    let query = {};
+
+    if (category) {
+      query.category = { $regex: category, $options: "i" };
+    }
+
+    if (q) {
+      query.$or = [
+        { name: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    const businesses = await Business.find(query)
+      .populate("owner", "username email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: businesses.length,
+      data: businesses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error searching businesses",
+      error: error.message,
+    });
+  }
+};
+
+
+
 // 🔍 Get Single Business
 exports.getBusinessById = async (req, res) => {
   try {

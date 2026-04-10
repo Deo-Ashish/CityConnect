@@ -13,8 +13,11 @@ router.post(
 // 📄 Get All Businesses
 router.get("/", businessController.getAllBusinesses);
 
-// 📍 Get Nearby Businesses (Geo search)
-router.get("/nearby", businessController.getNearbyBusinesses);
+// � Search Businesses
+router.get("/search", businessController.searchBusinesses);
+
+// �📍 Get Nearby Businesses (Geo search)
+router.get("/search/nearby", businessController.getNearbyBusinesses);
 
 // 🔍 Get Single Business by ID
 router.get("/:id", businessController.getBusinessById);
