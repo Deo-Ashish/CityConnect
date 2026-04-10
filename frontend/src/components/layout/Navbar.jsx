@@ -5,7 +5,7 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
 
   return (
-    <header className="bg-white border-b sticky top-0 z-50">
+    <header className="bg-black text-white border-b sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="text-xl font-bold">
