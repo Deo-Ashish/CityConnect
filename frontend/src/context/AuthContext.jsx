@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState } from "react";
+import authService from "../services/authService";
 
 export const AuthContext = createContext();
 
@@ -12,7 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/me", {
+      const res = await fetch("http://localhost:3000/api/auth/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -25,10 +26,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = (token, user) => {
-    localStorage.setItem("token", token);
-    setToken(token);
-    setUser(user);
+  const login = async (data) => {
+    try {
+      const res = await authService.login(data);
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+        setToken(res.token);
+        setUser(res.user);
+      }
+    } catch (err) {
+      throw err;
+    }
   };
 
   const logout = () => {

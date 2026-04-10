@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import Layout from "./layout";
 import Page from "./page";
+import ProtectedRoute from "./ProtectedRoute";
 
 import Explore from "../pages/Explore";
 import Business from "../pages/Business";
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
       },
       {
         path: "add-business",
-        element: <AddBusiness />,
+        element: (
+          <ProtectedRoute>
+            <AddBusiness />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "category/:name",
@@ -46,7 +51,11 @@ const router = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <Profile />,
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

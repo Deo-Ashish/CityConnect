@@ -13,7 +13,13 @@ const Business = () => {
   return (
     <div className="space-y-8">
       <BusinessDetails business={business} />
-      <BusinessReview reviews={business.reviews || []} />
+      <BusinessReview
+        businessId={business._id || business.id}
+        reviews={business.reviews || []}
+        onReviewAdded={() => {
+          // Optionally refresh or update business details when a new review is created
+        }}
+      />
     </div>
   );
 };

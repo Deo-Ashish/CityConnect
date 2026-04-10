@@ -9,12 +9,12 @@ const businessService = {
 
   getNearby: (lat, lng) =>
     api.get(
-      `/search/nearby?lat=${lat}&lng=${lng}`
+      `/business/search/nearby?lat=${lat}&lng=${lng}`
     ),
 
   getByCategory: (category) =>
     api.get(
-      `/search?category=${category}`
+      `/business/search?category=${category}`
     ),
 
   create: (data) =>
