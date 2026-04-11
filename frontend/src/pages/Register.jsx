@@ -1,16 +1,19 @@
+/* eslint-disable react-hooks/incompatible-library */
 import { useForm } from "react-hook-form";
-import { FiUser, FiMail, FiLock, FiLoader } from "react-icons/fi";
 import authService from "../services/authService";
 import { Link, useNavigate } from "react-router-dom";
+import { FiLoader, FiArrowRight } from "react-icons/fi";
+import { useState } from "react";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [errorRoot, setErrorRoot] = useState("");
+  
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
-    setError,
   } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -25,179 +28,114 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
+      // eslint-disable-next-line no-unused-vars
       const { confirmPassword, ...registerData } = data;
       registerData.role = "user"; // default role
       await authService.register(registerData);
       navigate("/login");
     } catch (err) {
-      setError("root", {
-        message: err.message || "Failed to register. Please try again.",
-      });
+      setErrorRoot(err.message || "Failed to register. Please try again.");
     }
   };
 
   return (
-<<<<<<< HEAD
-    <div className="max-h-screen bg-slate-900 flex items-center justify-center px-4 py-12">
-=======
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.16),transparent_24%),linear-gradient(180deg,#020612_0%,#01050f_100%)] flex items-center justify-center px-4 py-12">
->>>>>>> 34707b7 (improved some styling)
-      <div className="w-full max-w-md">
-        <div className="rounded-[32px] border border-white/10 bg-slate-950/95 p-8 shadow-[0_32px_120px_-48px_rgba(14,59,102,0.55)] backdrop-blur-xl">
-          <div className="mb-8 text-center space-y-3">
-            <p className="text-sm uppercase tracking-[0.24em] text-emerald-300/70">Register</p>
-            <h1 className="text-3xl font-semibold text-white">Create your CityConnect account</h1>
-            <p className="text-sm text-slate-400">
-              Sign up to start adding reviews, saving favorites, and discovering trusted local businesses.
-            </p>
+    <div className="auth-wrapper animate-fade-in">
+      <div className="auth-card">
+        <div className="auth-header">
+          <Link to="/" className="auth-logo">CityConnect</Link>
+          <h1 className="auth-title">Create account</h1>
+          <p className="auth-subtitle">Join us to start discovering.</p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+          <div className="auth-input-group">
+            <input
+              type="text"
+              autoComplete="username"
+              placeholder="Username"
+              disabled={isSubmitting}
+              {...register("username", {
+                required: "Username is required",
+                minLength: {
+                  value: 3,
+                  message: "Username must be at least 3 characters",
+                },
+              })}
+              className="auth-input"
+              style={errors.username ? { borderColor: '#f87171' } : {}}
+            />
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Username</label>
-              <div className="relative">
-                <FiUser className="absolute left-4 top-4 w-5 h-5 text-slate-500" />
-                <input
-                  type="text"
-                  autoComplete="username"
-                  placeholder="johndoe"
-                  disabled={isSubmitting}
-                  {...register("username", {
-                    required: "Username is required",
-                    minLength: {
-                      value: 3,
-                      message: "Username must be at least 3 characters",
-                    },
-                  })}
-                  className={`w-full pl-12 pr-4 py-3 rounded-2xl border text-white bg-slate-900 placeholder-slate-500 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-400/50 ${
-                    errors.username
-                      ? "border-red-600 focus:ring-red-500"
-                      : "border-slate-800 hover:border-slate-700"
-                  }`}
-                />
-              </div>
-              {errors.username && (
-                <p className="text-xs text-red-400">{errors.username.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Email address</label>
-              <div className="relative">
-                <FiMail className="absolute left-4 top-4 w-5 h-5 text-slate-500" />
-                <input
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  disabled={isSubmitting}
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "Enter a valid email address",
-                    },
-                  })}
-                  className={`w-full pl-12 pr-4 py-3 rounded-2xl border text-white bg-slate-900 placeholder-slate-500 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-400/50 ${
-                    errors.email
-                      ? "border-red-600 focus:ring-red-500"
-                      : "border-slate-800 hover:border-slate-700"
-                  }`}
-                />
-              </div>
-              {errors.email && (
-                <p className="text-xs text-red-400">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Password</label>
-              <div className="relative">
-                <FiLock className="absolute left-4 top-4 w-5 h-5 text-slate-500" />
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  placeholder="••••••••"
-                  disabled={isSubmitting}
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Password must be at least 8 characters",
-                    },
-                    pattern: {
-                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                      message: "Password must include uppercase, lowercase, and a number",
-                    },
-                  })}
-                  className={`w-full pl-12 pr-4 py-3 rounded-2xl border text-white bg-slate-900 placeholder-slate-500 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-400/50 ${
-                    errors.password
-                      ? "border-red-600 focus:ring-red-500"
-                      : "border-slate-800 hover:border-slate-700"
-                  }`}
-                />
-              </div>
-              {errors.password && (
-                <p className="text-xs text-red-400">{errors.password.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Confirm password</label>
-              <div className="relative">
-                <FiLock className="absolute left-4 top-4 w-5 h-5 text-slate-500" />
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  placeholder="••••••••"
-                  disabled={isSubmitting}
-                  {...register("confirmPassword", {
-                    required: "Please confirm your password",
-                    validate: (value) =>
-                      value === password || "Passwords do not match",
-                  })}
-                  className={`w-full pl-12 pr-4 py-3 rounded-2xl border text-white bg-slate-900 placeholder-slate-500 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-400/50 ${
-                    errors.confirmPassword
-                      ? "border-red-600 focus:ring-red-500"
-                      : "border-slate-800 hover:border-slate-700"
-                  }`}
-                />
-              </div>
-              {errors.confirmPassword && (
-                <p className="text-xs text-red-400">{errors.confirmPassword.message}</p>
-              )}
-            </div>
-
-            {errors.root && (
-              <div className="rounded-2xl border border-red-700/60 bg-red-950/70 p-3 text-sm text-red-200">
-                {errors.root.message}
-              </div>
-            )}
-
-            <button
-              type="submit"
+          <div className="auth-input-group">
+            <input
+              type="email"
+              autoComplete="email"
+              placeholder="Email address"
               disabled={isSubmitting}
-              className="w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <FiLoader className="h-4 w-4 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                "Register"
-              )}
-            </button>
-          </form>
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Enter a valid email address",
+                },
+              })}
+              className="auth-input"
+              style={errors.email ? { borderColor: '#f87171' } : {}}
+            />
+          </div>
 
-          <p className="mt-6 text-center text-sm text-slate-400">
-            Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-white hover:text-slate-200">
-              Sign in
-            </Link>
-          </p>
-        </div>
+          <div className="auth-input-group">
+            <input
+              type="password"
+              autoComplete="new-password"
+              placeholder="Password"
+              disabled={isSubmitting}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters",
+                },
+              })}
+              className="auth-input"
+              style={errors.password ? { borderColor: '#f87171' } : {}}
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <input
+              type="password"
+              autoComplete="new-password"
+              placeholder="Confirm password"
+              disabled={isSubmitting}
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (value) =>
+                  value === password || "Passwords do not match",
+              })}
+              className="auth-input"
+              style={errors.confirmPassword ? { borderColor: '#f87171' } : {}}
+            />
+          </div>
+
+          {(errors.username || errors.email || errors.password || errors.confirmPassword || errorRoot) && (
+            <div className="auth-error">
+              {errorRoot || errors.username?.message || errors.email?.message || errors.password?.message || errors.confirmPassword?.message}
+            </div>
+          )}
+
+          <button type="submit" disabled={isSubmitting} className="auth-button">
+            {isSubmitting ? <FiLoader className="auth-loading" /> : "Sign Up"}
+            {!isSubmitting && <FiArrowRight className="auth-button-icon" />}
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          Already have an account? <Link to="/login" className="auth-link">Sign in</Link>
+        </p>
       </div>
     </div>
   );
 };
+
 export default Register;

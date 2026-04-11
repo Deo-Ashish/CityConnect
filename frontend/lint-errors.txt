@@ -1,0 +1,214 @@
+
+> client@0.0.0 lint
+> eslint .
+
+
+/Users/ankit/code/CityConnect/frontend/src/context/AuthContext.jsx
+   6:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-refresh/only-export-components
+  25:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  23 |       });
+  24 |     } else {
+> 25 |       setLoading(false);
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  26 |     }
+  27 |   }, []);
+  28 |  react-hooks/set-state-in-effect
+
+/Users/ankit/code/CityConnect/frontend/src/context/LocationContext.jsx
+   6:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  45:18  error  'err' is defined but never used                                                                                                 no-unused-vars
+  51:8   error  'err' is defined but never used                                                                                                 no-unused-vars
+  90:14  error  'err' is defined but never used                                                                                                 no-unused-vars
+
+/Users/ankit/code/CityConnect/frontend/src/hooks/useBusiness.js
+  14:7  error    Error: Cannot access variable before it is declared
+
+`fetchNearby` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  12 |   useEffect(() => {
+  13 |     if (type === "nearby" && location) {
+> 14 |       fetchNearby();
+     |       ^^^^^^^^^^^ `fetchNearby` accessed before it is declared
+  15 |     }
+  16 |
+  17 |     if (type === "category" && value) {
+
+  24 |   }, [type, value, location]);
+  25 |
+> 26 |   const fetchNearby = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 28 |
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 29 |     const data = await businessService.getNearby(location.lat, location.lng);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 30 |     setBusinesses(data.data || data);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 31 |     setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 32 |   };
+     | ^^^^^ `fetchNearby` is declared here
+  33 |
+  34 |   const fetchByCategory = async () => {
+  35 |     setLoading(true);  react-hooks/immutability
+  18:7  error    Error: Cannot access variable before it is declared
+
+`fetchByCategory` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  16 |
+  17 |     if (type === "category" && value) {
+> 18 |       fetchByCategory();
+     |       ^^^^^^^^^^^^^^^ `fetchByCategory` accessed before it is declared
+  19 |     }
+  20 |
+  21 |     if (type === "single" && value) {
+
+  32 |   };
+  33 |
+> 34 |   const fetchByCategory = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 36 |
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 37 |     const data = await businessService.getByCategory(value);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 38 |     setBusinesses(data.data || data);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 39 |     setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 40 |   };
+     | ^^^^^ `fetchByCategory` is declared here
+  41 |
+  42 |   const fetchSingle = async () => {
+  43 |     setLoading(true);                                            react-hooks/immutability
+  22:7  error    Error: Cannot access variable before it is declared
+
+`fetchSingle` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  20 |
+  21 |     if (type === "single" && value) {
+> 22 |       fetchSingle();
+     |       ^^^^^^^^^^^ `fetchSingle` accessed before it is declared
+  23 |     }
+  24 |   }, [type, value, location]);
+  25 |
+
+  40 |   };
+  41 |
+> 42 |   const fetchSingle = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 44 |
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 45 |     const data = await businessService.getById(value);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 46 |     setBusiness(data.data || data);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 47 |     setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 48 |   };
+     | ^^^^^ `fetchSingle` is declared here
+  49 |
+  50 |   return {
+  51 |     businesses,                                                                                                                        react-hooks/immutability
+  24:6  warning  React Hook useEffect has missing dependencies: 'fetchByCategory', 'fetchNearby', and 'fetchSingle'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+
+/Users/ankit/code/CityConnect/frontend/src/pages/AddBusiness.jsx
+  59:16  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  59:21  error  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-empty
+  68:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  66 |   useEffect(() => {
+  67 |     if (location && !markerPos) {
+> 68 |       setMarkerPos({ lat: location.lat, lng: location.lng });
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  69 |       setMapCenter([location.lat, location.lng]);
+  70 |     }
+  71 |   }, [location, markerPos]);  react-hooks/set-state-in-effect
+
+/Users/ankit/code/CityConnect/frontend/src/pages/AdminPortal.jsx
+  28:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  37:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  44:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  49:34  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  47 |   useEffect(() => {
+  48 |     if (user?.role === 'admin') {
+> 49 |       if (activeTab === 'users') fetchUsers();
+     |                                  ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  50 |       if (activeTab === 'businesses') fetchBusinesses();
+  51 |       if (activeTab === 'categories') fetchCategories();
+  52 |     }  react-hooks/set-state-in-effect
+  60:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  72:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  80:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  89:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  97:13  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+
+/Users/ankit/code/CityConnect/frontend/src/pages/BusinessDetails.jsx
+  22:6  warning  React Hook useEffect has a missing dependency: 'fetchBusinessData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/ankit/code/CityConnect/frontend/src/pages/EditBusiness.jsx
+  28:11  error  'location' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  49:16  error  'err' is defined but never used                                                           no-unused-vars
+  49:21  error  Empty block statement                                                                     no-empty
+  69:14  error  'err' is defined but never used                                                           no-unused-vars
+  94:13  error  'res' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+
+/Users/ankit/code/CityConnect/frontend/src/pages/Home.jsx
+  28:16  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+  28:21  error  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-empty
+  61:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  59 |   useEffect(() => {
+  60 |     if (location) {
+> 61 |       setLoadingServices(true);
+     |       ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  62 |       const url = `http://localhost:5001/api/search/nearby?lat=${location.lat}&lng=${location.lng}&radius=${location.radius || 50}`;
+  63 |       axios.get(url)
+  64 |         .then(res => setLocalServices(res.data.slice(0, 6)))  react-hooks/set-state-in-effect
+
+/Users/ankit/code/CityConnect/frontend/src/pages/Register.jsx
+  24:20  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+  22 |   });
+  23 |
+> 24 |   const password = watch("password");
+     |                    ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  25 |
+  26 |   const onSubmit = async (data) => {
+  27 |     try {  react-hooks/incompatible-library
+  28:15  error    'confirmPassword' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+
+✖ 33 problems (30 errors, 3 warnings)
+

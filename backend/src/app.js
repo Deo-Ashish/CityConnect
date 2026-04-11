@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const connectDB = require("./db/db");
-=======
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
->>>>>>> 9abce5f (code written again)
-
+import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import authRoutes from './routes/auth.routes.js';
 import businessRoutes from './routes/business.routes.js';
 import reviewRoutes from './routes/review.routes.js';
@@ -22,12 +13,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
-<<<<<<< HEAD
 app.use(cookieParser());
-=======
-app.use(helmet());
-app.use(morgan('dev'));
->>>>>>> 9abce5f (code written again)
 
 // Routes
 app.use('/api/auth', authRoutes);

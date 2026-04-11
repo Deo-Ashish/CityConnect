@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars, no-empty */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from '../context/LocationContext';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import axios from 'axios';
+import { FiLoader, FiMapPin } from "react-icons/fi";
 
 function LocationSelector({ markerPos, setMarkerPos }) {
   useMapEvents({
@@ -25,7 +27,6 @@ function MapCenterUpdater({ center }) {
 export default function EditBusiness() {
   const { id } = useParams();
   const { user } = useAuth();
-  const { location } = useLocation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '', description: '', category: '', phone: '', email: '', address: ''
@@ -35,6 +36,7 @@ export default function EditBusiness() {
   const [suggestions, setSuggestions] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [mapCenter, setMapCenter] = useState([40.7128, -74.0060]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -54,7 +56,6 @@ export default function EditBusiness() {
   }, [mapSearch, isTyping]);
 
   useEffect(() => {
-    // Fetch existing business data
     axios.get(`http://localhost:5001/api/business/${id}`)
       .then(res => {
         const { name, description, category, phone, email, address, location: bizLoc } = res.data;
@@ -73,15 +74,24 @@ export default function EditBusiness() {
   }, [id, navigate]);
 
   if (!user || user.role !== 'business') {
-    return <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>Not authorized.</div>;
+    return (
+      <div className="auth-wrapper animate-fade-in">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <p className="auth-title" style={{ fontSize: '1.25rem' }}>Access Denied</p>
+          <p className="auth-subtitle">Not authorized to edit this business.</p>
+        </div>
+      </div>
+    );
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
       if (!markerPos) {
         alert("Please select a location on the map.");
+        setIsSubmitting(false);
         return;
       }
       
@@ -91,46 +101,44 @@ export default function EditBusiness() {
         lng: markerPos.lng
       };
       
-      const res = await axios.put(`http://localhost:5001/api/business/${id}`, payload, {
+      await axios.put(`http://localhost:5001/api/business/${id}`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       navigate(`/business/${id}`);
     } catch (err) {
       alert(err.response?.data?.message || 'Error updating business');
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="animate-fade-in container" style={{ padding: '2rem 1rem', maxWidth: '600px' }}>
-      <div className="card">
-        <h2 style={{ marginBottom: '1.5rem' }}>Edit Business</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label className="input-label">Business Name</label>
-            <input type="text" className="input-field" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+    <div className="page-container animate-fade-in">
+      <div className="modern-card" style={{ maxWidth: '700px', margin: '0 auto' }}>
+        <h2 className="auth-title" style={{ marginBottom: '2rem', textAlign: 'center' }}>Edit Business</h2>
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="auth-input-group">
+            <input type="text" className="auth-input" placeholder="Business Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
           </div>
-          <div className="input-group">
-            <label className="input-label">Category</label>
-            <input type="text" className="input-field" placeholder="e.g. Electricians" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} required />
+          
+          <div className="auth-input-group">
+            <input type="text" className="auth-input" placeholder="Category (e.g. Electricians)" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} required />
           </div>
-          <div className="input-group">
-            <label className="input-label">Description</label>
-            <textarea className="input-field" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required rows="3"></textarea>
+          
+          <div className="auth-input-group">
+            <textarea className="auth-input" placeholder="Description" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required rows="3"></textarea>
           </div>
-          <div className="input-group">
-            <label className="input-label">Phone</label>
-            <input type="text" className="input-field" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+             <input type="text" className="auth-input" placeholder="Phone Number" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
+             <input type="email" className="auth-input" placeholder="Contact Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
           </div>
-          <div className="input-group">
-            <label className="input-label">Email</label>
-            <input type="email" className="input-field" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
-          </div>
-          <div className="input-group" style={{ position: 'relative' }}>
-            <label className="input-label">Address / Location Search</label>
+          
+          <div className="auth-input-group" style={{ position: 'relative' }}>
             <input 
               type="text" 
               placeholder="Start typing an address or place..." 
-              className="input-field"
+              className="auth-input"
               value={mapSearch}
               onChange={e => {
                 setMapSearch(e.target.value);
@@ -140,7 +148,7 @@ export default function EditBusiness() {
               required
             />
             {suggestions.length > 0 && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', zIndex: 1000, overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: '0.75rem', zIndex: 1000, overflow: 'hidden' }}>
                 {suggestions.map((s, idx) => {
                   const placeName = [s.properties.name, s.properties.street, s.properties.city, s.properties.state].filter(Boolean).join(', ');
                   return (
@@ -164,17 +172,24 @@ export default function EditBusiness() {
               </div>
             )}
             
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.75rem 0 0.5rem 0' }}>Or click anywhere on the map below to pinpoint exact coordinates manually.</p>
-            <div style={{ height: '300px', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+               <FiMapPin /> Or select exact coordinates manually below
+            </p>
+            <div style={{ height: '280px', borderRadius: '1rem', overflow: 'hidden', border: '1px solid var(--border-color)', marginTop: '0.5rem' }}>
               <MapContainer center={mapCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                />
                 <MapCenterUpdater center={mapCenter} />
                 <LocationSelector markerPos={markerPos} setMarkerPos={setMarkerPos} />
               </MapContainer>
             </div>
           </div>
-
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Update Business</button>
+          
+          <button type="submit" disabled={isSubmitting} className="auth-button">
+            {isSubmitting ? <span className="auth-loading"><FiLoader /></span> : "Update Business"}
+          </button>
         </form>
       </div>
     </div>

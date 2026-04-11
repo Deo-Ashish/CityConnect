@@ -42,83 +42,11 @@ export const createBusiness = async (req, res) => {
 
 export const updateBusiness = async (req, res) => {
   try {
-<<<<<<< HEAD
-    const businesses = await Business.find()
-      .populate("owner", "username email")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: businesses.length,
-      data: businesses,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching businesses",
-      error: error.message,
-    });
-  }
-};
-
-
-
-// 🔍 Search Businesses
-exports.searchBusinesses = async (req, res) => {
-  try {
-    const { category, q } = req.query;
-
-    let query = {};
-
-    if (category) {
-      query.category = { $regex: category, $options: "i" };
-    }
-
-    if (q) {
-      query.$or = [
-        { name: { $regex: q, $options: "i" } },
-        { description: { $regex: q, $options: "i" } },
-      ];
-    }
-
-    const businesses = await Business.find(query)
-      .populate("owner", "username email")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: businesses.length,
-      data: businesses,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error searching businesses",
-      error: error.message,
-    });
-  }
-};
-
-
-
-// 🔍 Get Single Business
-exports.getBusinessById = async (req, res) => {
-  try {
-    const business = await Business.findById(req.params.id)
-      .populate("owner", "username email");
-
-    if (!business) {
-      return res.status(404).json({
-        success: false,
-        message: "Business not found",
-      });
-=======
     let business = await Business.findById(req.params.id);
     if (!business) return res.status(404).json({ message: 'Business not found' });
     
-    if (business.owner.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: 'Not authorized to update this business' });
->>>>>>> 9abce5f (code written again)
+    if (business.owner.toString() !== req.user.id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized' });
     }
     
     business = await Business.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -127,7 +55,6 @@ exports.getBusinessById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 export const deleteBusiness = async (req, res) => {
   try {
     const business = await Business.findById(req.params.id);

@@ -10,6 +10,27 @@ const useBusiness = (type, value) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const fetchNearby = async () => {
+      setLoading(true);
+      const data = await businessService.getNearby(location.lat, location.lng);
+      setBusinesses(data.data || data);
+      setLoading(false);
+    };
+
+    const fetchByCategory = async () => {
+      setLoading(true);
+      const data = await businessService.getByCategory(value);
+      setBusinesses(data.data || data);
+      setLoading(false);
+    };
+
+    const fetchSingle = async () => {
+      setLoading(true);
+      const data = await businessService.getById(value);
+      setBusiness(data.data || data);
+      setLoading(false);
+    };
+
     if (type === "nearby" && location) {
       fetchNearby();
     }
@@ -22,30 +43,6 @@ const useBusiness = (type, value) => {
       fetchSingle();
     }
   }, [type, value, location]);
-
-  const fetchNearby = async () => {
-    setLoading(true);
-
-    const data = await businessService.getNearby(location.lat, location.lng);
-    setBusinesses(data.data || data);
-    setLoading(false);
-  };
-
-  const fetchByCategory = async () => {
-    setLoading(true);
-
-    const data = await businessService.getByCategory(value);
-    setBusinesses(data.data || data);
-    setLoading(false);
-  };
-
-  const fetchSingle = async () => {
-    setLoading(true);
-
-    const data = await businessService.getById(value);
-    setBusiness(data.data || data);
-    setLoading(false);
-  };
 
   return {
     businesses,

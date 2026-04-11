@@ -6,26 +6,23 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   return (
-<<<<<<< HEAD
-    <header className="bg-slate-900 text-white border-b border-slate-700 sticky top-0 z-50">
-=======
-    <header className="bg-black/90 text-white border-b border-zinc-800/80 sticky top-0 z-50 backdrop-blur-sm shadow-sm">
->>>>>>> 34707b7 (improved some styling)
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+    <header className="glass-panel">
+      <div className="page-container" style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {/* Logo */}
-        <Link to="/" className="text-xl font-bold">
+        <Link to="/" className="auth-logo" style={{ marginBottom: 0, fontSize: '1rem' }}>
           CityConnect
         </Link>
 
         {/* Links */}
-        <nav className="flex items-center gap-4 md:gap-6">
+        <nav className="flex-item" style={{ gap: '1.5rem' }}>
           <NavLink
             to="/explore"
             className={({ isActive }) =>
               isActive
-                ? "text-white font-semibold border-b-2 border-white pb-1"
-                : "text-gray-300 hover:text-white transition-colors"
+                ? "auth-link"
+                : "auth-link"
             }
+            style={({ isActive }) => ({ color: isActive ? 'var(--text-main)' : 'var(--text-muted)' })}
           >
             Explore
           </NavLink>
@@ -34,22 +31,15 @@ const Navbar = () => {
             <>
               <NavLink
                 to="/add-business"
-                className={({ isActive }) =>
-                  isActive
-                    ? "rounded-full bg-sky-500 px-4 py-2 text-black font-semibold"
-                    : "rounded-full border border-sky-500/30 px-4 py-2 text-sky-300 hover:bg-sky-500/10 hover:text-sky-100 transition"
-                }
+                className="auth-link"
               >
                 Add business
               </NavLink>
 
               <NavLink
                 to="/profile"
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-white font-semibold border-b-2 border-white pb-1"
-                    : "text-gray-300 hover:text-white transition-colors"
-                }
+                className="auth-link"
+                style={({ isActive }) => ({ color: isActive ? 'var(--text-main)' : 'var(--text-muted)' })}
               >
                 {user?.username || user?.name}
               </NavLink>
@@ -59,7 +49,8 @@ const Navbar = () => {
                   logout();
                   navigate("/login");
                 }}
-                className="rounded-full border border-red-500 px-4 py-2 text-red-500 transition hover:bg-red-500/10"
+                className="auth-button"
+                style={{ padding: '0.4rem 1rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-muted)', width: 'auto', marginTop: 0 }}
               >
                 Logout
               </button>
@@ -68,21 +59,15 @@ const Navbar = () => {
             <>
               <NavLink
                 to="/login"
-                className={({ isActive }) =>
-                  isActive
-                    ? "rounded-full bg-white px-4 py-2 text-black font-semibold"
-                    : "rounded-full border border-white/20 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition"
-                }
+                className="auth-button"
+                style={{ background: 'transparent', border: '1px solid var(--text-main)', padding: '0.4rem 1rem', width: 'auto', marginTop: 0 }}
               >
                 Login
               </NavLink>
               <NavLink
                 to="/register"
-                className={({ isActive }) =>
-                  isActive
-                    ? "rounded-full bg-sky-500 px-4 py-2 text-black font-semibold"
-                    : "rounded-full border border-sky-500/30 px-4 py-2 text-sky-300 hover:bg-sky-500/10 hover:text-sky-100 transition"
-                }
+                className="auth-button"
+                style={{ padding: '0.4rem 1rem', width: 'auto', marginTop: 0 }}
               >
                 Register
               </NavLink>
