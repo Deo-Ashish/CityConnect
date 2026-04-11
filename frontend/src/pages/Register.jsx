@@ -1,14 +1,31 @@
 /* eslint-disable react-hooks/incompatible-library */
 import { useForm } from "react-hook-form";
-import authService from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { FiLoader, FiArrowRight } from "react-icons/fi";
+import { FiLoader, FiArrowRight, FiUser, FiBriefcase } from "react-icons/fi";
 import { useState } from "react";
+
+const ROLES = [
+  {
+    value: "user",
+    label: "Customer",
+    description: "Discover and review local services",
+    icon: FiUser,
+  },
+  {
+    value: "business",
+    label: "Business Owner",
+    description: "List and manage your business",
+    icon: FiBriefcase,
+  },
+];
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [errorRoot, setErrorRoot] = useState("");
-  
+  const [selectedRole, setSelectedRole] = useState("user");
+
   const {
     register,
     handleSubmit,
@@ -17,7 +34,7 @@ const Register = () => {
   } = useForm({
     mode: "onBlur",
     defaultValues: {
-      username: "",
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -27,12 +44,24 @@ const Register = () => {
   const password = watch("password");
 
   const onSubmit = async (data) => {
+    setErrorRoot("");
     try {
       // eslint-disable-next-line no-unused-vars
-      const { confirmPassword, username, ...rest } = data;
-      const registerData = { ...rest, name: username, role: 'user' };
-      await authService.register(registerData);
-      navigate("/login");
+      const { confirmPassword, ...rest } = data;
+      const registerData = { ...rest, role: selectedRole };
+
+      // Register the user
+      const res = await fetch("http://localhost:5001/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registerData),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Registration failed");
+
+      // Auto-login with the returned token
+      await login(data.email, data.password);
+      navigate("/");
     } catch (err) {
       setErrorRoot(err.message || "Failed to register. Please try again.");
     }
@@ -40,7 +69,7 @@ const Register = () => {
 
   return (
     <div className="auth-wrapper animate-fade-in">
-      <div className="auth-card">
+      <div className="auth-card" style={{ maxWidth: "480px" }}>
         <div className="auth-header">
           <Link to="/" className="auth-logo">CityConnect</Link>
           <h1 className="auth-title">Create account</h1>
@@ -48,24 +77,57 @@ const Register = () => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+          {/* Role selector */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+            {ROLES.map(({ value, label, description, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setSelectedRole(value)}
+                style={{
+                  padding: "1rem",
+                  borderRadius: "0.875rem",
+                  border: `1px solid ${selectedRole === value ? "var(--text-main)" : "var(--border-color)"}`,
+                  background: selectedRole === value ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.2)",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <Icon
+                  size={20}
+                  style={{
+                    marginBottom: "0.5rem",
+                    color: selectedRole === value ? "var(--text-main)" : "#64748b",
+                  }}
+                />
+                <p style={{ fontSize: "0.9rem", fontWeight: 600, color: selectedRole === value ? "var(--text-main)" : "#94a3b8", marginBottom: "0.2rem" }}>
+                  {label}
+                </p>
+                <p style={{ fontSize: "0.75rem", color: "#64748b", lineHeight: 1.4 }}>
+                  {description}
+                </p>
+              </button>
+            ))}
+          </div>
+
+          {/* Full Name */}
           <div className="auth-input-group">
             <input
               type="text"
-              autoComplete="username"
-              placeholder="Username"
+              autoComplete="name"
+              placeholder="Full Name"
               disabled={isSubmitting}
-              {...register("username", {
-                required: "Username is required",
-                minLength: {
-                  value: 3,
-                  message: "Username must be at least 3 characters",
-                },
+              {...register("name", {
+                required: "Full name is required",
+                minLength: { value: 2, message: "Name must be at least 2 characters" },
               })}
               className="auth-input"
-              style={errors.username ? { borderColor: '#f87171' } : {}}
+              style={errors.name ? { borderColor: "#f87171" } : {}}
             />
           </div>
 
+          {/* Email */}
           <div className="auth-input-group">
             <input
               type="email"
@@ -80,10 +142,11 @@ const Register = () => {
                 },
               })}
               className="auth-input"
-              style={errors.email ? { borderColor: '#f87171' } : {}}
+              style={errors.email ? { borderColor: "#f87171" } : {}}
             />
           </div>
 
+          {/* Password */}
           <div className="auth-input-group">
             <input
               type="password"
@@ -92,16 +155,14 @@ const Register = () => {
               disabled={isSubmitting}
               {...register("password", {
                 required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
+                minLength: { value: 8, message: "Password must be at least 8 characters" },
               })}
               className="auth-input"
-              style={errors.password ? { borderColor: '#f87171' } : {}}
+              style={errors.password ? { borderColor: "#f87171" } : {}}
             />
           </div>
 
+          {/* Confirm Password */}
           <div className="auth-input-group">
             <input
               type="password"
@@ -110,23 +171,22 @@ const Register = () => {
               disabled={isSubmitting}
               {...register("confirmPassword", {
                 required: "Please confirm your password",
-                validate: (value) =>
-                  value === password || "Passwords do not match",
+                validate: (value) => value === password || "Passwords do not match",
               })}
               className="auth-input"
-              style={errors.confirmPassword ? { borderColor: '#f87171' } : {}}
+              style={errors.confirmPassword ? { borderColor: "#f87171" } : {}}
             />
           </div>
 
-          {(errors.username || errors.email || errors.password || errors.confirmPassword || errorRoot) && (
+          {(errors.name || errors.email || errors.password || errors.confirmPassword || errorRoot) && (
             <div className="auth-error">
-              {errorRoot || errors.username?.message || errors.email?.message || errors.password?.message || errors.confirmPassword?.message}
+              {errorRoot || errors.name?.message || errors.email?.message || errors.password?.message || errors.confirmPassword?.message}
             </div>
           )}
 
           <button type="submit" disabled={isSubmitting} className="auth-button">
-            {isSubmitting ? <FiLoader className="auth-loading" /> : "Sign Up"}
-            {!isSubmitting && <FiArrowRight className="auth-button-icon" />}
+            {isSubmitting ? <FiLoader className="auth-loading" /> : "Create account"}
+            {!isSubmitting && <FiArrowRight />}
           </button>
         </form>
 
