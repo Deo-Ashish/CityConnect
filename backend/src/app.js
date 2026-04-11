@@ -7,6 +7,7 @@ import reviewRoutes from './routes/review.routes.js';
 import searchRoutes from './routes/search.routes.js';
 import categoryRoutes from './routes/category.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/api/review', reviewRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

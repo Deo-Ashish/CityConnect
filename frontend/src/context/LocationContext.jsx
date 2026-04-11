@@ -1,10 +1,7 @@
-/* eslint-disable react-refresh/only-export-components, no-unused-vars */
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-const LocationContext = createContext();
-
-export const useLocation = () => useContext(LocationContext);
+export const LocationContext = createContext();
 
 export const LocationProvider = ({ children }) => {
   const [location, setLocation] = useState(null); // { lat, lng }
@@ -43,13 +40,13 @@ export const LocationProvider = ({ children }) => {
           }
 
           setLocation({ lat, lng: lon, name: placeName, radius });
-        } catch (err) {
+        } catch {
           setLocation({ lat: position.coords.latitude, lng: position.coords.longitude, name: 'Current Location', radius: 50 });
         } finally {
           setLoading(false);
         }
       },
-      (err) => {
+      () => {
         setError('Unable to retrieve your location');
         setLoading(false);
         // Default to a central city coordinate if failed
@@ -88,7 +85,7 @@ export const LocationProvider = ({ children }) => {
       } else {
         setError('City or place not found');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to find location');
     } finally {
       setLoading(false);

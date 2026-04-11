@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect, no-unused-vars, react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Trash2, Edit2, Plus, Shield, Users, Briefcase, Grid } from 'lucide-react';
@@ -26,21 +25,27 @@ export default function AdminPortal() {
     try {
       const res = await axios.get('http://localhost:5001/api/admin/users', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       setUsers(res.data);
-    } catch(err) { console.error('Failed to fetch users'); }
+    } catch { 
+      console.error('Failed to fetch users'); 
+    }
   };
 
   const fetchBusinesses = async () => {
     try {
       const res = await axios.get('http://localhost:5001/api/business', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       setBusinesses(res.data);
-    } catch(err) { console.error('Failed to fetch businesses'); }
+    } catch { 
+      console.error('Failed to fetch businesses'); 
+    }
   };
 
   const fetchCategories = async () => {
     try {
       const res = await axios.get('http://localhost:5001/api/categories');
       setCategories(res.data);
-    } catch(err) { console.error('Failed to fetch categories'); }
+    } catch { 
+      console.error('Failed to fetch categories'); 
+    }
   };
 
   useEffect(() => {
@@ -49,14 +54,17 @@ export default function AdminPortal() {
       if (activeTab === 'businesses') fetchBusinesses();
       if (activeTab === 'categories') fetchCategories();
     }
-  }, [activeTab, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, user?.role]);
 
   const handleDeleteUser = async (id) => {
     if(!window.confirm("Are you sure you want to permanently delete this user and all their data?")) return;
     try {
       await axios.delete(`http://localhost:5001/api/admin/users/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchUsers();
-    } catch(err) { alert('Failed to delete'); }
+    } catch { 
+      alert('Failed to delete'); 
+    }
   };
 
   const handeToggleRole = async (id, currentRole) => {
@@ -68,7 +76,9 @@ export default function AdminPortal() {
     try {
       await axios.put(`http://localhost:5001/api/admin/users/${id}`, { role: newRole }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchUsers();
-    } catch(err) { alert('Failed to update role'); }
+    } catch { 
+      alert('Failed to update role'); 
+    }
   };
 
   const handleDeleteBusiness = async (id) => {
@@ -76,7 +86,9 @@ export default function AdminPortal() {
     try {
       await axios.delete(`http://localhost:5001/api/admin/business/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchBusinesses();
-    } catch(err) { alert('Failed to delete'); }
+    } catch { 
+      alert('Failed to delete'); 
+    }
   };
 
   const handleAddCategory = async (e) => {
@@ -85,7 +97,9 @@ export default function AdminPortal() {
       await axios.post('http://localhost:5001/api/admin/categories', newCategory, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       setNewCategory({ name: '', icon: 'star', slug: '' });
       fetchCategories();
-    } catch(err) { alert('Failed to add category'); }
+    } catch { 
+      alert('Failed to add category'); 
+    }
   };
 
   const handleDeleteCategory = async (id) => {
@@ -93,7 +107,9 @@ export default function AdminPortal() {
     try {
       await axios.delete(`http://localhost:5001/api/admin/categories/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchCategories();
-    } catch(err) { alert('Failed to delete'); }
+    } catch { 
+      alert('Failed to delete'); 
+    }
   };
 
   if (loading || !user || user.role !== 'admin') return <div className="page-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>Loading Admin Portal...</div>;

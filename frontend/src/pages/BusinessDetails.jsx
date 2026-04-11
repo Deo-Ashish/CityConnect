@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { MapPin, Phone, Mail, Star, User, Trash2, Edit } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { MapPin, Phone, Mail, Star, User, Trash2, Edit, Sparkles } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 export default function BusinessDetails() {
   const { id } = useParams();
@@ -12,15 +11,23 @@ export default function BusinessDetails() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+  const [aiSummary, setAiSummary] = useState('');
+  const [loadingAI, setLoadingAI] = useState(false);
 
-  const fetchBusinessData = () => {
+  const fetchBusinessData = useCallback(() => {
     axios.get(`http://localhost:5001/api/business/${id}`).then(res => setBusiness(res.data)).catch(console.error);
     axios.get(`http://localhost:5001/api/review/${id}`).then(res => setReviews(res.data)).catch(console.error);
-  };
+    
+    setLoadingAI(true);
+    axios.get(`http://localhost:5001/api/business/${id}/ai-summary`)
+      .then(res => setAiSummary(res.data.summary))
+      .catch(() => setAiSummary("Insights currently unavailable."))
+      .finally(() => setLoadingAI(false));
+  }, [id]);
 
   useEffect(() => {
     fetchBusinessData();
-  }, [id]);
+  }, [id, fetchBusinessData]);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
@@ -107,6 +114,29 @@ export default function BusinessDetails() {
           <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '0.75rem', border: '1px solid var(--border-color)' }}>
             <div style={{ padding: '0.5rem', background: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', borderRadius: '50%' }}><User size={16} /></div>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Service Provider: <strong style={{ color: 'var(--text-main)' }}>{business.owner.name}</strong></span>
+          </div>
+        )}
+      </div>
+
+      {/* AI Insights Section */}
+      <div className="modern-card" style={{ marginBottom: '2rem', border: '1px solid rgba(99, 102, 241, 0.3)', background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.5), rgba(15, 15, 25, 0.5))' }}>
+        <div className="flex-item" style={{ marginBottom: '1rem', color: '#818cf8', fontWeight: '600', fontSize: '1.1rem' }}>
+          <Sparkles size={20} />
+          <span>AI Business Insights</span>
+        </div>
+        
+        {loadingAI ? (
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="animate-pulse" style={{ width: '12px', height: '12px', background: '#818cf8', borderRadius: '50%' }}></div>
+            Generating AI summary from customer reviews...
+          </div>
+        ) : (
+          <div style={{ color: 'var(--text-main)', lineHeight: 1.7, fontSize: '0.95rem' }}>
+            {aiSummary ? (
+              <div dangerouslySetInnerHTML={{ __html: aiSummary.replace(/\n/g, '<br />') }} />
+            ) : (
+              <span style={{ color: 'var(--text-muted)' }}>No AI insights available for this business yet.</span>
+            )}
           </div>
         )}
       </div>

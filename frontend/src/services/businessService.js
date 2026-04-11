@@ -25,6 +25,9 @@ const businessService = {
 
   remove: (id) =>
     api.delete(`/business/${id}`),
+
+  getMyBusinesses: () =>
+    api.get("/business/my"),
 };
 
 export default businessService;

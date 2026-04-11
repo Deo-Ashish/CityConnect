@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
 import { FiUser, FiLogOut, FiChevronDown, FiShield } from "react-icons/fi";
 

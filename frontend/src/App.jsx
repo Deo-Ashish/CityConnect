@@ -9,6 +9,7 @@ import EditBusiness from './pages/EditBusiness.jsx';
 import Profile from './pages/Profile.jsx';
 import AdminPortal from './pages/AdminPortal.jsx';
 import Navbar from './components/layout/Navbar.jsx';
+import AIChatAssistant from './components/AIChatAssistant.jsx';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/admin" element={<AdminPortal />} />
         </Routes>
       </main>
+      <AIChatAssistant />
     </div>
   )
 }

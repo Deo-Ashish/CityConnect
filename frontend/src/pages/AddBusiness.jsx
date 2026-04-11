@@ -1,10 +1,11 @@
-/* eslint-disable react-hooks/set-state-in-effect, no-unused-vars, no-empty, react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
+import useLocation from '../hooks/useLocation';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
-import axios from 'axios';
 import { FiLoader, FiMapPin } from "react-icons/fi";
+import businessService from '../services/businessService';
+import api from '../services/api';
 
 function LocationSelector({ markerPos, setMarkerPos }) {
   useMapEvents({
@@ -25,7 +26,7 @@ function MapCenterUpdater({ center }) {
 
 export default function AddBusiness() {
   const { user } = useAuth();
-  const location = null; 
+  const { location } = useLocation(); 
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '', description: '', category: '', phone: '', email: '', address: ''
@@ -39,8 +40,8 @@ export default function AddBusiness() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:5001/api/business/category')
-      .then(res => setAvailableCategories(res.data))
+    api.get('/categories')
+      .then(res => setAvailableCategories(res))
       .catch(() => {
          setAvailableCategories([{_id: 1, name: "Electrician"}, {_id: 2, name: "Plumber"}]);
       });
@@ -52,11 +53,14 @@ export default function AddBusiness() {
         setSuggestions([]); return;
       }
       try {
-        const res = await axios.get(`https://photon.komoot.io/api/?q=${encodeURIComponent(mapSearch)}&limit=5`);
-        if (res.data && res.data.features) {
-          setSuggestions(res.data.features);
+        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(mapSearch)}&limit=5`);
+        const data = await res.json();
+        if (data && data.features) {
+          setSuggestions(data.features);
         }
-      } catch {}
+      } catch (err) {
+        console.error("Suggestion fetch error:", err);
+      }
     };
     
     const timeoutId = setTimeout(fetchSuggestions, 300);
@@ -65,12 +69,11 @@ export default function AddBusiness() {
 
   useEffect(() => {
     if (location && !markerPos) {
-      setTimeout(() => {
-        setMarkerPos({ lat: location.lat, lng: location.lng });
-        setMapCenter([location.lat, location.lng]);
-      }, 0);
+      setMarkerPos({ lat: location.lat, lng: location.lng });
+      setMapCenter([location.lat, location.lng]);
     }
-  }, [location, markerPos]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   if (!user) {
     return (
@@ -88,7 +91,6 @@ export default function AddBusiness() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
       if (!markerPos) {
         alert("Please select a location on the map.");
         setIsSubmitting(false);
@@ -101,12 +103,10 @@ export default function AddBusiness() {
         lng: markerPos.lng
       };
       
-      const res = await axios.post('http://localhost:5001/api/business', payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      navigate(`/business/${res.data._id}`);
+      const res = await businessService.create(payload);
+      navigate(`/business/${res._id}`);
     } catch (err) {
-      alert(err.response?.data?.message || 'Error adding business');
+      alert(err.message || 'Error adding business');
       setIsSubmitting(false);
     }
   };

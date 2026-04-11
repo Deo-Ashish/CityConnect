@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars, no-empty */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useLocation } from '../context/LocationContext';
+import { useAuth } from '../hooks/useAuth';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
-import axios from 'axios';
 import { FiLoader, FiMapPin } from "react-icons/fi";
+import businessService from '../services/businessService';
 
 function LocationSelector({ markerPos, setMarkerPos }) {
   useMapEvents({
@@ -44,11 +42,14 @@ export default function EditBusiness() {
         setSuggestions([]); return;
       }
       try {
-        const res = await axios.get(`https://photon.komoot.io/api/?q=${encodeURIComponent(mapSearch)}&limit=5`);
-        if (res.data && res.data.features) {
-          setSuggestions(res.data.features);
+        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(mapSearch)}&limit=5`);
+        const data = await res.json();
+        if (data && data.features) {
+          setSuggestions(data.features);
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error("Suggestion fetch error:", err);
+      }
     };
     
     const timeoutId = setTimeout(fetchSuggestions, 300);
@@ -56,10 +57,11 @@ export default function EditBusiness() {
   }, [mapSearch, isTyping]);
 
   useEffect(() => {
-    axios.get(`http://localhost:5001/api/business/${id}`)
+    businessService.getById(id)
       .then(res => {
-        const { name, description, category, phone, email, address, location: bizLoc } = res.data;
+        const { name, description, category, phone, email, address, location: bizLoc } = res;
         setFormData({ name, description, category, phone, email, address });
+        setMapSearch(address || '');
         if (bizLoc && bizLoc.coordinates) {
           const lat = bizLoc.coordinates[1];
           const lon = bizLoc.coordinates[0];
@@ -67,7 +69,7 @@ export default function EditBusiness() {
           setMapCenter([lat, lon]);
         }
       })
-      .catch(err => {
+      .catch(() => {
         alert("Failed to load business data");
         navigate(-1);
       });
@@ -88,7 +90,6 @@ export default function EditBusiness() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
       if (!markerPos) {
         alert("Please select a location on the map.");
         setIsSubmitting(false);
@@ -101,12 +102,10 @@ export default function EditBusiness() {
         lng: markerPos.lng
       };
       
-      await axios.put(`http://localhost:5001/api/business/${id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await businessService.update(id, payload);
       navigate(`/business/${id}`);
     } catch (err) {
-      alert(err.response?.data?.message || 'Error updating business');
+      alert(err.message || 'Error updating business');
       setIsSubmitting(false);
     }
   };

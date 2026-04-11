@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/incompatible-library */
 import { useForm } from "react-hook-form";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { FiLoader, FiArrowRight, FiUser, FiBriefcase } from "react-icons/fi";
 import { useState } from "react";
@@ -47,7 +47,7 @@ const Register = () => {
     setErrorRoot("");
     try {
       // eslint-disable-next-line no-unused-vars
-      const { confirmPassword, ...rest } = data;
+      const { confirmPassword: _, ...rest } = data;
       const registerData = { ...rest, role: selectedRole };
 
       // Register the user

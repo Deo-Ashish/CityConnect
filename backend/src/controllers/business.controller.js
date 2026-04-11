@@ -1,6 +1,7 @@
 import Business from '../models/Business.js';
 import Category from '../models/Category.js';
 import Review from '../models/Review.js';
+import { generateReviewSummary, enhanceSearchQuery } from '../utils/ai.utils.js';
 
 export const getBusinesses = async (req, res) => {
   try {
@@ -42,14 +43,28 @@ export const createBusiness = async (req, res) => {
 
 export const updateBusiness = async (req, res) => {
   try {
+    const { name, description, category, phone, email, address, images, lat, lng } = req.body;
     let business = await Business.findById(req.params.id);
+    
     if (!business) return res.status(404).json({ message: 'Business not found' });
     
     if (business.owner.toString() !== req.user.id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized' });
     }
+
+    const updateData = { ...req.body };
+
+    if (lat && lng) {
+      updateData.location = {
+        type: 'Point',
+        coordinates: [parseFloat(lng), parseFloat(lat)]
+      };
+      // Remove horizontal lat/lng so they don't potentially interfere with the model (even if not in schema)
+      delete updateData.lat;
+      delete updateData.lng;
+    }
     
-    business = await Business.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    business = await Business.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
     res.status(200).json(business);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -92,11 +107,22 @@ export const searchNearby = async (req, res) => {
     };
 
     if (q) {
+      // AI Enhancement: Optionally expand the search query
+      let searchTerms = q;
+      try {
+        if (q.split(' ').length > 2) { // Only enhance longer, natural language queries
+          const enhanced = await enhanceSearchQuery(q);
+          if (enhanced) searchTerms = `${q}|${enhanced.split(',').join('|')}`;
+        }
+      } catch (err) {
+        console.error("AI Search Enhancement Failed:", err);
+      }
+
       query.$or = [
-        { name: { $regex: new RegExp(q, 'i') } },
-        { category: { $regex: new RegExp(q, 'i') } },
-        { address: { $regex: new RegExp(q, 'i') } },
-        { description: { $regex: new RegExp(q, 'i') } }
+        { name: { $regex: new RegExp(searchTerms, 'i') } },
+        { category: { $regex: new RegExp(searchTerms, 'i') } },
+        { address: { $regex: new RegExp(searchTerms, 'i') } },
+        { description: { $regex: new RegExp(searchTerms, 'i') } }
       ];
     }
     
@@ -156,6 +182,22 @@ export const getMyBusinesses = async (req, res) => {
   try {
     const businesses = await Business.find({ owner: req.user.id }).sort({ createdAt: -1 });
     res.status(200).json(businesses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getBusinessAISummary = async (req, res) => {
+  try {
+    const reviews = await Review.find({ business: req.params.id }).select('comment');
+    if (reviews.length === 0) {
+      return res.status(200).json({ summary: "No reviews yet to analyze." });
+    }
+
+    const reviewTexts = reviews.map(r => r.comment);
+    const summary = await generateReviewSummary(reviewTexts);
+
+    res.status(200).json({ summary });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

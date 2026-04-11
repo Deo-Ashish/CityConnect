@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/set-state-in-effect, no-unused-vars, no-empty, react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Search, MapPin, Grid, Star } from 'lucide-react';
-import { useLocation } from '../context/LocationContext';
+import useLocation from '../hooks/useLocation';
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -26,7 +25,9 @@ export default function Home() {
         if (res.data && res.data.features) {
           setSuggestions(res.data.features);
         }
-      } catch {}
+      } catch (err) {
+        console.error("Suggestion fetch error:", err);
+      }
     };
     
     const timeoutId = setTimeout(fetchSuggestions, 300);
@@ -45,7 +46,8 @@ export default function Home() {
           { slug: 'cafes', name: 'Cafes' }
         ]);
       }
-    }).catch(() => {
+    }).catch(err => {
+      console.error("Categories fetch error:", err);
       setCategories([
         { slug: 'electricians', name: 'Electricians' },
         { slug: 'plumbers', name: 'Plumbers' },
@@ -64,7 +66,7 @@ export default function Home() {
         .catch(console.error)
         .finally(() => setLoadingServices(false));
     }
-  }, [location]);
+  }, [location?.lat, location?.lng, location?.radius]);
 
   return (
     <div className="home-page">
