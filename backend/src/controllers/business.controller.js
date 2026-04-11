@@ -60,7 +60,7 @@ export const deleteBusiness = async (req, res) => {
     const business = await Business.findById(req.params.id);
     if (!business) return res.status(404).json({ message: 'Business not found' });
     
-    if (business.owner.toString() !== req.user.id.toString()) {
+    if (business.owner.toString() !== req.user.id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to delete this business' });
     }
     
@@ -150,4 +150,13 @@ export const getCategories = async (req, res) => {
     } catch(err) {
         res.status(500).json({ message: err.message });
     }
+};
+
+export const getMyBusinesses = async (req, res) => {
+  try {
+    const businesses = await Business.find({ owner: req.user.id }).sort({ createdAt: -1 });
+    res.status(200).json(businesses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
