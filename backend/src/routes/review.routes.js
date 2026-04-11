@@ -1,23 +1,16 @@
-const express = require("express");
+import express from 'express';
+import { createReview, getReviewsByBusiness, deleteReview } from '../controllers/review.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+
 const router = express.Router();
 
-const reviewController = require("../controllers/review.controller");
+router.route('/')
+  .post(protect, createReview);
 
-// ---------------------- ROUTES ---------------------- //
+router.route('/:businessId')
+  .get(getReviewsByBusiness);
 
-// ➕ Create Review
-router.post("/", reviewController.createReview);
+router.route('/:id')
+  .delete(protect, deleteReview);
 
-// 📄 Get All Reviews
-router.get("/", reviewController.getAllReviews);
-
-// 🔍 Get Reviews by Business ID
-router.get("/business/:businessId", reviewController.getReviewsByBusiness);
-
-// 🔍 Get Single Review
-router.get("/:id", reviewController.getReviewById);
-
-// ❌ Delete Review
-router.delete("/:id", reviewController.deleteReview);
-
-module.exports = router;
+export default router;

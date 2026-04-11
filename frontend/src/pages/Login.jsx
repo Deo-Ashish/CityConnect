@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import useAuth from "../hooks/useAuth";
@@ -13,32 +14,39 @@ const Login = () => {
       navigate("/");
     }
   }, [isAuthenticated, navigate]);
+=======
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm({
-    mode: "onBlur",
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+export default function Login() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'user' });
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
+>>>>>>> 9abce5f (code written again)
 
-  const onSubmit = async (data) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
+<<<<<<< HEAD
       await login(data);
       navigate("/");
+=======
+      if (isLogin) {
+        await login(formData.email, formData.password);
+      } else {
+        await register(formData);
+      }
+      navigate('/explore');
+>>>>>>> 9abce5f (code written again)
     } catch (err) {
-      setError("root", {
-        message: "Failed to sign in. Please try again.",
-      });
+      alert(err.response?.data?.message || 'Error occurred');
     }
   };
 
   return (
+<<<<<<< HEAD
 <<<<<<< HEAD
     <div className="max-h-screen bg-slate-900 flex items-center justify-center px-4 py-12">
 =======
@@ -168,10 +176,78 @@ const Login = () => {
               Create account
             </Link>
           </p>
+=======
+    <div className="animate-fade-in container" style={{ padding: '4rem 1rem', display: 'flex', justifyContent: 'center' }}>
+      <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          {isLogin ? 'Welcome Back' : 'Create an Account'}
+        </h2>
+        
+        <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <>
+              <div className="input-group">
+                <label className="input-label">Full Name</label>
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  value={formData.name} 
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="input-group">
+                <label className="input-label">I am a...</label>
+                <select 
+                  className="input-field" 
+                  value={formData.role} 
+                  onChange={e => setFormData({...formData, role: e.target.value})}
+                >
+                  <option value="user">Customer (Looking for services)</option>
+                  <option value="business">Business (Offering services)</option>
+                </select>
+              </div>
+            </>
+          )}
+          
+          <div className="input-group">
+            <label className="input-label">Email</label>
+            <input 
+              type="email" 
+              className="input-field" 
+              value={formData.email} 
+              onChange={e => setFormData({...formData, email: e.target.value})}
+              required
+            />
+          </div>
+          
+          <div className="input-group">
+            <label className="input-label">Password</label>
+            <input 
+              type="password" 
+              className="input-field" 
+              value={formData.password} 
+              onChange={e => setFormData({...formData, password: e.target.value})}
+              required
+            />
+          </div>
+          
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+            {isLogin ? 'Login' : 'Sign Up'}
+          </button>
+        </form>
+        
+        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <button 
+            type="button" 
+            onClick={() => setIsLogin(!isLogin)} 
+            style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontFamily: 'inherit' }}
+          >
+            {isLogin ? 'Need an account? Sign up' : 'Already have an account? Login'}
+          </button>
+>>>>>>> 9abce5f (code written again)
         </div>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

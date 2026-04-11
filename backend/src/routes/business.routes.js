@@ -1,15 +1,21 @@
-const express = require("express");
+import express from 'express';
+import { getBusinesses, getBusinessById, createBusiness, updateBusiness, deleteBusiness, searchNearby, searchByCategory, seedCategories, getCategories } from '../controllers/business.controller.js';
+import { protect, authorize } from '../middleware/auth.middleware.js';
+
 const router = express.Router();
 
-const businessController = require("../controllers/business.controller");
+// Categories map here relative to /api/ (i.e. /api/categories which we will mount) Wait, I will mount this on /api/business but for search let's mount on /api/search and /api/category
+// I will just put the main business CRUD here.
+router.route('/')
+  .get(getBusinesses)
+  .post(protect, authorize('business'), createBusiness);
 
-// ➕ Create Business
-router.post(
-  "/",
-  // protect, // enable if login required
-  businessController.createBusiness
-);
+router.route('/:id')
+  .get(getBusinessById)
+  .put(protect, authorize('business'), updateBusiness)
+  .delete(protect, authorize('business'), deleteBusiness);
 
+<<<<<<< HEAD
 // 📄 Get All Businesses
 router.get("/", businessController.getAllBusinesses);
 
@@ -37,3 +43,6 @@ router.delete(
 );
 
 module.exports = router;
+=======
+export default router;
+>>>>>>> 9abce5f (code written again)

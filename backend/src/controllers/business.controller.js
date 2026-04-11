@@ -1,41 +1,48 @@
-const Business = require("../models/business.model");
+import Business from '../models/Business.js';
+import Category from '../models/Category.js';
+import Review from '../models/Review.js';
 
-// ➕ Create Business
-exports.createBusiness = async (req, res) => {
+export const getBusinesses = async (req, res) => {
   try {
-    const { name, description, category, phone, email, address, location, images } = req.body;
-
-    const business = await Business.create({
-      name,
-      description,
-      category,
-      phone,
-      email,
-      address,
-      location,
-      images,
-      owner: req.user.id, // from auth middleware
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Business created successfully",
-      data: business,
-    });
+    const businesses = await Business.find().populate('owner', 'name email');
+    res.status(200).json(businesses);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error creating business",
-      error: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-
-// 📄 Get All Businesses
-exports.getAllBusinesses = async (req, res) => {
+export const getBusinessById = async (req, res) => {
   try {
+    const business = await Business.findById(req.params.id).populate('owner', 'name email');
+    if (!business) return res.status(404).json({ message: 'Business not found' });
+    res.status(200).json(business);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const createBusiness = async (req, res) => {
+  try {
+    const { name, description, category, phone, email, address, images, lat, lng } = req.body;
+    
+    const business = await Business.create({
+      name, description, category, phone, email, address, images,
+      owner: req.user.id,
+      location: {
+        type: 'Point',
+        coordinates: [parseFloat(lng), parseFloat(lat)] // [longitude, latitude]
+      }
+    });
+    
+    res.status(201).json(business);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateBusiness = async (req, res) => {
+  try {
+<<<<<<< HEAD
     const businesses = await Business.find()
       .populate("owner", "username email")
       .sort({ createdAt: -1 });
@@ -105,136 +112,115 @@ exports.getBusinessById = async (req, res) => {
         success: false,
         message: "Business not found",
       });
+=======
+    let business = await Business.findById(req.params.id);
+    if (!business) return res.status(404).json({ message: 'Business not found' });
+    
+    if (business.owner.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to update this business' });
+>>>>>>> 9abce5f (code written again)
     }
-
-    res.status(200).json({
-      success: true,
-      data: business,
-    });
+    
+    business = await Business.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    res.status(200).json(business);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching business",
-      error: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-
-// 📍 Get Nearby Businesses
-exports.getNearbyBusinesses = async (req, res) => {
+export const deleteBusiness = async (req, res) => {
   try {
-    const { lng, lat, distance = 5000 } = req.query;
-
-    if (!lng || !lat) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide lng and lat",
-      });
+    const business = await Business.findById(req.params.id);
+    if (!business) return res.status(404).json({ message: 'Business not found' });
+    
+    if (business.owner.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to delete this business' });
     }
+    
+    await Review.deleteMany({ business: req.params.id }); // cascade delete reviews
+    await business.deleteOne();
+    res.status(200).json({ message: 'Business removed' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    const businesses = await Business.find({
+export const searchNearby = async (req, res) => {
+  try {
+    const { lat, lng, radius = 10, q } = req.query; // radius in km
+    if (!lat || !lng) {
+      return res.status(400).json({ message: 'Please provide lat and lng' });
+    }
+    
+    let query = {
       location: {
         $near: {
+          $maxDistance: parseFloat(radius) * 1000, // convert to meters
           $geometry: {
-            type: "Point",
-            coordinates: [parseFloat(lng), parseFloat(lat)],
-          },
-          $maxDistance: parseInt(distance),
-        },
-      },
-    });
+            type: 'Point',
+            coordinates: [parseFloat(lng), parseFloat(lat)]
+          }
+        }
+      }
+    };
 
-    res.status(200).json({
-      success: true,
-      count: businesses.length,
-      data: businesses,
-    });
+    if (q) {
+      query.$or = [
+        { name: { $regex: new RegExp(q, 'i') } },
+        { category: { $regex: new RegExp(q, 'i') } },
+        { address: { $regex: new RegExp(q, 'i') } },
+        { description: { $regex: new RegExp(q, 'i') } }
+      ];
+    }
+    
+    const businesses = await Business.find(query);
+    
+    res.status(200).json(businesses);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching nearby businesses",
-      error: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-
-// ✏️ Update Business
-exports.updateBusiness = async (req, res) => {
-  try {
-    const business = await Business.findById(req.params.id);
-
-    if (!business) {
-      return res.status(404).json({
-        success: false,
-        message: "Business not found",
-      });
+export const searchByCategory = async (req, res) => {
+    try {
+        const { category } = req.query;
+        if (!category) return res.status(400).json({ message: 'Category is required' });
+        
+        const businesses = await Business.find({ category: { $regex: new RegExp(category, 'i') } });
+        res.status(200).json(businesses);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-
-    // check owner
-    if (business.owner.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized",
-      });
-    }
-
-    const updatedBusiness = await Business.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "Business updated successfully",
-      data: updatedBusiness,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error updating business",
-      error: error.message,
-    });
-  }
 };
 
+export const seedCategories = async (req, res) => {
+    try {
+        const categories = [
+            { name: 'Electricians', icon: 'zap', slug: 'electricians' },
+            { name: 'Plumbers', icon: 'droplet', slug: 'plumbers' },
+            { name: 'Tutors', icon: 'book', slug: 'tutors' },
+            { name: 'Restaurants', icon: 'utensils', slug: 'restaurants' },
+            { name: 'Cafes', icon: 'coffee', slug: 'cafes' },
+            { name: 'Repair shops', icon: 'tool', slug: 'repair-shops' },
+            { name: 'Medical stores', icon: 'cross', slug: 'medical-stores' },
+            { name: 'Gyms', icon: 'dumbbell', slug: 'gyms' },
+            { name: 'Beauty salons', icon: 'scissors', slug: 'beauty-salons' },
+            { name: 'Car mechanics', icon: 'wrench', slug: 'car-mechanics' }
+        ];
 
-
-// ❌ Delete Business
-exports.deleteBusiness = async (req, res) => {
-  try {
-    const business = await Business.findById(req.params.id);
-
-    if (!business) {
-      return res.status(404).json({
-        success: false,
-        message: "Business not found",
-      });
+        await Category.deleteMany({});
+        const created = await Category.insertMany(categories);
+        res.status(201).json(created);
+    } catch(err) {
+        res.status(500).json({ message: err.message });
     }
+};
 
-    // check owner
-    if (business.owner.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized",
-      });
+export const getCategories = async (req, res) => {
+    try {
+        const categories = await Category.find();
+        res.status(200).json(categories);
+    } catch(err) {
+        res.status(500).json({ message: err.message });
     }
-
-    await business.deleteOne();
-
-    res.status(200).json({
-      success: true,
-      message: "Business deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error deleting business",
-      error: error.message,
-    });
-  }
 };

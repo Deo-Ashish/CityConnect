@@ -1,23 +1,9 @@
-const express = require("express");
+import express from 'express';
+import { seedCategories, getCategories } from '../controllers/business.controller.js';
+
 const router = express.Router();
 
-const categoryController = require("../controllers/category.controller");
+router.get('/', getCategories);
+router.post('/seed', seedCategories);
 
-// ---------------------- ROUTES ---------------------- //
-
-// ➕ Create Category
-router.post("/", categoryController.createCategory);
-
-// 📄 Get All Categories
-router.get("/", categoryController.getAllCategories);
-
-// 🔍 Get Single Category
-router.get("/:id", categoryController.getCategoryById);
-
-// ✏️ Update Category
-router.put("/:id", categoryController.updateCategory);
-
-// ❌ Delete Category
-router.delete("/:id", categoryController.deleteCategory);
-
-module.exports = router;
+export default router;

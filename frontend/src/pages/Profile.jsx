@@ -1,8 +1,11 @@
-import useAuth from "../hooks/useAuth";
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-const Profile = () => {
-  const { user } = useAuth();
+export default function Profile() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
+<<<<<<< HEAD
   if (!user)
     return (
       <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4">
@@ -67,9 +70,30 @@ const Profile = () => {
             </div>
           </div>
         </div>
+=======
+  if (!user) {
+    return <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>Please login to view profile.</div>;
+  }
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <div className="animate-fade-in container" style={{ padding: '2rem 1rem', maxWidth: '600px' }}>
+      <div className="card">
+        <h2 style={{ marginBottom: '1.5rem' }}>My Profile</h2>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <p><strong>Name:</strong> {user.name}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Role:</strong> {user.role}</p>
+        </div>
+        <button onClick={handleLogout} className="btn btn-secondary" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}>
+          Logout
+        </button>
+>>>>>>> 9abce5f (code written again)
       </div>
     </div>
   );
-};
-
-export default Profile;
+}
