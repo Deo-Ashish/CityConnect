@@ -21,9 +21,11 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
 };
 
 userSchema.methods.getSignedJwtToken = function() {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: '30d'
-  });
+  return jwt.sign(
+    { id: this._id, role: this.role, name: this.name },
+    process.env.JWT_SECRET,
+    { expiresIn: '30d' }
+  );
 };
 
 export default mongoose.model('User', userSchema);

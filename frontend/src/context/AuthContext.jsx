@@ -16,7 +16,8 @@ export const AuthProvider = ({ children }) => {
       axios.get('http://localhost:5001/api/auth/me', {
         headers: { Authorization: `Bearer ${token}` }
       }).then(res => {
-        setUser(res.data.user);
+        const u = res.data.user;
+        setUser({ ...u, username: u.username || u.name });
       }).catch(() => {
         localStorage.removeItem('token');
       }).finally(() => {
@@ -30,14 +31,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const res = await axios.post('http://localhost:5001/api/auth/login', { email, password });
     localStorage.setItem('token', res.data.token);
-    setUser(res.data.user);
+    const userData = { ...res.data.user, username: res.data.user.username || res.data.user.name };
+    setUser(userData);
     return res.data;
   };
 
   const register = async (userData) => {
     const res = await axios.post('http://localhost:5001/api/auth/register', userData);
     localStorage.setItem('token', res.data.token);
-    setUser(res.data.user);
+    const userObj = { ...res.data.user, username: res.data.user.username || res.data.user.name };
+    setUser(userObj);
     return res.data;
   };
 

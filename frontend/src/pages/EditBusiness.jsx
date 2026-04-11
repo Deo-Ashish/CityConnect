@@ -73,7 +73,7 @@ export default function EditBusiness() {
       });
   }, [id, navigate]);
 
-  if (!user || user.role !== 'business') {
+  if (!user) {
     return (
       <div className="auth-wrapper animate-fade-in">
         <div className="auth-card" style={{ textAlign: 'center' }}>

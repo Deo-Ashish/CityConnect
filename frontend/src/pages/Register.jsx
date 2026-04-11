@@ -29,8 +29,8 @@ const Register = () => {
   const onSubmit = async (data) => {
     try {
       // eslint-disable-next-line no-unused-vars
-      const { confirmPassword, ...registerData } = data;
-      registerData.role = "user"; // default role
+      const { confirmPassword, username, ...rest } = data;
+      const registerData = { ...rest, name: username, role: 'user' };
       await authService.register(registerData);
       navigate("/login");
     } catch (err) {

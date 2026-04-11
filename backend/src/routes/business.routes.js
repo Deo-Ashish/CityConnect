@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 // 📄 Get All Businesses
-router.route('/').get(getBusinesses).post(protect, authorize('business', 'admin'), createBusiness);
+router.route('/').get(getBusinesses).post(protect, createBusiness);
 
 // 📍 Get Nearby Businesses (Geo search)
 router.get("/search/nearby", searchNearby);
