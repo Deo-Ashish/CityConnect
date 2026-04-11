@@ -67,108 +67,120 @@ export default function Home() {
   }, [location]);
 
   return (
-    <div className="page-container animate-fade-in">
-      
+    <div className="home-page">
       {/* Hero Section */}
-      <div className="hero-section">
-        <h1 className="hero-title">Discover Hyper-Local Services</h1>
-        <p className="hero-subtitle">Find the best plumbers, cafes, and tutors near you instantly.</p>
+      <section className="hero-section">
+        <div className="hero-content">
+          <h1 className="hero-title">Discover Hyper-Local Services</h1>
+          <p className="hero-subtitle">Find the best plumbers, cafes, and tutors near you instantly.</p>
 
-        <div className="flex-item justify-center mb-10" style={{ flexWrap: 'wrap' }}>
-          <div className="badge-minimal badge-blue flex-item" style={{ padding: '0.6rem 1rem', fontSize: '0.9rem' }}>
-            <MapPin size={16} />
-            <span>Near: <strong style={{ color: 'white' }}>{loading ? 'Locating...' : (location?.name || 'Current Location')}</strong></span>
+          <div className="location-selector">
+            <div className="location-badge">
+              <MapPin size={16} />
+              <span>Near: <strong>{loading ? 'Locating...' : (location?.name || 'Current Location')}</strong></span>
+            </div>
+            
+            <div className="city-input-container">
+              <input 
+                type="text" 
+                placeholder="Change city..." 
+                className="city-input" 
+                value={cityInput} 
+                onChange={e => { setCityInput(e.target.value); setIsTyping(true); }} 
+              />
+              {suggestions.length > 0 && (
+                <div className="suggestions-dropdown">
+                  {suggestions.map((s, idx) => {
+                    const placeName = [s.properties.name, s.properties.city, s.properties.state].filter(Boolean).join(', ');
+                    return (
+                      <div 
+                        key={idx} 
+                        className="suggestion-item"
+                        onClick={() => {
+                          setCityInput(''); setSuggestions([]); setIsTyping(false); setCustomLocation(placeName);
+                        }}
+                      >
+                        {placeName}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           
-          <div className="auth-input-group" style={{ width: '220px' }}>
-            <input 
-              type="text" 
-              placeholder="Change city..." 
-              className="auth-input" 
-              value={cityInput} 
-              onChange={e => { setCityInput(e.target.value); setIsTyping(true); }} 
-            />
-            {suggestions.length > 0 && (
-              <div style={{ position: 'absolute', top: '110%', left: 0, width: '100%', background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: '0.75rem', zIndex: 1000, overflow: 'hidden' }}>
-                {suggestions.map((s, idx) => {
-                  const placeName = [s.properties.name, s.properties.city, s.properties.state].filter(Boolean).join(', ');
-                  return (
-                    <div 
-                      key={idx} 
-                      style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', color: 'var(--text-main)', fontSize: '0.85rem' }}
-                      onClick={() => {
-                        setCityInput(''); setSuggestions([]); setIsTyping(false); setCustomLocation(placeName);
-                      }}
-                    >
-                      {placeName}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <form onSubmit={(e) => { e.preventDefault(); if (searchQuery) navigate(`/explore?q=${encodeURIComponent(searchQuery)}`); }} className="search-form">
+             <div className="search-input-group">
+               <input 
+                 type="text" 
+                 placeholder="Search for 'electrician', 'pizza'..." 
+                 className="search-input"
+                 value={searchQuery}
+                 onChange={e => setSearchQuery(e.target.value)}
+               />
+               <button type="submit" className="search-button">
+                 <Search size={18} />
+               </button>
+             </div>
+          </form>
         </div>
-        
-        <form onSubmit={(e) => { e.preventDefault(); if (searchQuery) navigate(`/explore?q=${encodeURIComponent(searchQuery)}`); }} style={{ maxWidth: '500px', margin: '0 auto' }} className="flex-item">
-           <input 
-             type="text" 
-             placeholder="Search for 'electrician', 'pizza'..." 
-             className="auth-input"
-             value={searchQuery}
-             onChange={e => setSearchQuery(e.target.value)}
-           />
-           <button type="submit" className="auth-button" style={{ width: '50px', padding: '0.875rem' }}>
-             <Search size={18} />
-           </button>
-        </form>
-      </div>
+      </section>
 
       {/* Categories Section */}
-      <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 500 }}>Explore Categories</h2>
-      </div>
+      <section className="categories-section">
+        <div className="section-header">
+          <h2 className="section-title">Explore Categories</h2>
+          <p className="section-subtitle">Browse services by category</p>
+        </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '1rem', marginBottom: '4rem' }}>
-        {categories.map(cat => (
-          <Link to={`/explore?category=${cat.slug}`} key={cat.slug} className="modern-card" style={{ padding: '1.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
-              <Grid size={18} color="#a1a1aa" />
-            </div>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: '400', color: 'var(--text-main)' }}>{cat.name}</h3>
-          </Link>
-        ))}
-      </div>
-
-      {/* Nearby Services */}
-      <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 500 }}>Services Near You</h2>
-        <Link to="/explore" className="auth-link" style={{ fontSize: '0.9rem' }}>View on map &rarr;</Link>
-      </div>
-      
-      {loadingServices ? (
-        <p style={{ color: 'var(--text-muted)' }}>Loading local services...</p>
-      ) : localServices.length === 0 ? (
-        <p style={{ color: 'var(--text-muted)' }}>No services found nearby.</p>
-      ) : (
-        <div className="modern-grid mb-10">
-          {localServices.map(biz => (
-            <Link to={`/business/${biz._id}`} key={biz._id} className="modern-card" style={{ textDecoration: 'none' }}>
-               <h3 style={{ fontSize: '1.25rem', fontWeight: '500', marginBottom: '0.25rem', color: 'var(--text-main)' }}>{biz.name}</h3>
-               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{biz.category}</p>
-               
-               <div className="flex-between">
-                 <span className="badge-minimal badge-neutral">
-                   <Star size={12} style={{ marginRight: '4px' }} /> {biz.rating} ({biz.reviewsCount})
-                 </span>
-                 <span style={{ fontSize: '0.85rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                   View details &rarr;
-                 </span>
-               </div>
+        <div className="categories-grid">
+          {categories.map(cat => (
+            <Link to={`/explore?category=${cat.slug}`} key={cat.slug} className="category-card">
+              <div className="category-icon">
+                <Grid size={24} />
+              </div>
+              <h3 className="category-name">{cat.name}</h3>
             </Link>
           ))}
         </div>
-      )}
-      
+      </section>
+
+      {/* Nearby Services */}
+      <section className="services-section">
+        <div className="section-header">
+          <h2 className="section-title">Services Near You</h2>
+          <Link to="/explore" className="view-all-link">View on map &rarr;</Link>
+        </div>
+        
+        {loadingServices ? (
+          <div className="loading-state">
+            <p>Loading local services...</p>
+          </div>
+        ) : localServices.length === 0 ? (
+          <div className="empty-state">
+            <p>No services found nearby.</p>
+          </div>
+        ) : (
+          <div className="services-grid">
+            {localServices.map(biz => (
+              <Link to={`/business/${biz._id}`} key={biz._id} className="service-card">
+                 <div className="service-header">
+                   <h3 className="service-name">{biz.name}</h3>
+                   <p className="service-category">{biz.category}</p>
+                 </div>
+                 
+                 <div className="service-footer">
+                   <div className="rating-badge">
+                     <Star size={12} />
+                     <span>{biz.rating} ({biz.reviewsCount})</span>
+                   </div>
+                   <span className="view-details">View details &rarr;</span>
+                 </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
