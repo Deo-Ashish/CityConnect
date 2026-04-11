@@ -140,7 +140,7 @@ export default function AddBusiness() {
             <textarea className="auth-input" placeholder="Describe your business and services..." value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required rows="4"></textarea>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          <div className="grid-mobile-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
              <input type="text" className="auth-input" placeholder="Phone Number" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
              <input type="email" className="auth-input" placeholder="Contact Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
           </div>

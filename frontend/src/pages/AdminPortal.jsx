@@ -116,20 +116,20 @@ export default function AdminPortal() {
 
   return (
     <div className="page-container animate-fade-in" style={{ padding: '2rem 1.5rem', maxWidth: '1000px' }}>
-      <div className="flex-item" style={{ marginBottom: '2.5rem', padding: '1rem 0' }}>
+      <div className="flex-item flex-mobile-column" style={{ marginBottom: '2.5rem', padding: '1rem 0', alignItems: 'center', textAlign: 'center' }}>
         <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.75rem', borderRadius: '1rem', border: '1px solid var(--border-color)' }}>
           <Shield size={24} color="var(--text-main)" />
         </div>
-        <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 600, margin: 0 }}>Admin Portal</h1>
+        <div style={{ textAlign: 'inherit' }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 1.75rem)', fontWeight: 600, margin: 0 }}>Admin Portal</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.2rem' }}>Manage users, businesses, and platform resources.</p>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '1rem', border: '1px solid var(--border-color)', width: 'fit-content' }}>
-        <button onClick={() => setActiveTab('users')} className="auth-button" style={{ background: activeTab === 'users' ? 'var(--text-main)' : 'transparent', color: activeTab === 'users' ? '#000' : 'var(--text-muted)', marginTop: 0, width: 'auto', padding: '0.6rem 1.25rem' }}><Users size={16} /> Users</button>
-        <button onClick={() => setActiveTab('businesses')} className="auth-button" style={{ background: activeTab === 'businesses' ? 'var(--text-main)' : 'transparent', color: activeTab === 'businesses' ? '#000' : 'var(--text-muted)', marginTop: 0, width: 'auto', padding: '0.6rem 1.25rem' }}><Briefcase size={16} /> Businesses</button>
-        <button onClick={() => setActiveTab('categories')} className="auth-button" style={{ background: activeTab === 'categories' ? 'var(--text-main)' : 'transparent', color: activeTab === 'categories' ? '#000' : 'var(--text-muted)', marginTop: 0, width: 'auto', padding: '0.6rem 1.25rem' }}><Grid size={16} /> Categories</button>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '1rem', border: '1px solid var(--border-color)', width: '100%', maxWidth: 'max-content', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <button onClick={() => setActiveTab('users')} className="auth-button" style={{ background: activeTab === 'users' ? 'var(--text-main)' : 'transparent', color: activeTab === 'users' ? '#000' : 'var(--text-muted)', marginTop: 0, width: 'auto', padding: '0.6rem 1.25rem', whiteSpace: 'nowrap', flexShrink: 0 }}><Users size={16} /> Users</button>
+        <button onClick={() => setActiveTab('businesses')} className="auth-button" style={{ background: activeTab === 'businesses' ? 'var(--text-main)' : 'transparent', color: activeTab === 'businesses' ? '#000' : 'var(--text-muted)', marginTop: 0, width: 'auto', padding: '0.6rem 1.25rem', whiteSpace: 'nowrap', flexShrink: 0 }}><Briefcase size={16} /> Businesses</button>
+        <button onClick={() => setActiveTab('categories')} className="auth-button" style={{ background: activeTab === 'categories' ? 'var(--text-main)' : 'transparent', color: activeTab === 'categories' ? '#000' : 'var(--text-muted)', marginTop: 0, width: 'auto', padding: '0.6rem 1.25rem', whiteSpace: 'nowrap', flexShrink: 0 }}><Grid size={16} /> Categories</button>
       </div>
 
       <div className="modern-card">
@@ -209,20 +209,22 @@ export default function AdminPortal() {
         {/* CATEGORIES TAB */}
         {activeTab === 'categories' && (
           <div>
-            <form onSubmit={handleAddCategory} className="auth-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto', gap: '1rem', alignItems: 'end', marginBottom: '2rem', padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: '1rem', background: 'rgba(0,0,0,0.2)' }}>
+            <form onSubmit={handleAddCategory} className="auth-form flex-mobile-column" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', alignItems: 'end', marginBottom: '2.5rem', padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: '1.25rem', background: 'rgba(255,255,255,0.03)' }}>
               <div>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Name</label>
+                <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Category Name</label>
                 <input type="text" className="auth-input" value={newCategory.name} onChange={e => setNewCategory({...newCategory, name: e.target.value, slug: e.target.value.toLowerCase().replace(/ /g, '-')})} required />
               </div>
               <div>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Icon Pattern</label>
+                <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Icon Key (React Icons)</label>
                 <input type="text" className="auth-input" value={newCategory.icon} onChange={e => setNewCategory({...newCategory, icon: e.target.value})} required />
               </div>
-              <div>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Slug Map</label>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Search Slug</label>
                 <input type="text" className="auth-input" value={newCategory.slug} onChange={e => setNewCategory({...newCategory, slug: e.target.value})} required />
               </div>
-              <button type="submit" className="auth-button" style={{ width: '48px', height: '48px', padding: 0, marginTop: 0 }}><Plus size={20} /></button>
+              <button type="submit" className="auth-button" style={{ height: '50px', width: '100%', maxWidth: '100px', padding: 0, marginTop: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Plus size={20} /> <span className="show-mobile" style={{ marginLeft: '0.5rem' }}>Add</span>
+              </button>
             </form>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.25rem' }}>

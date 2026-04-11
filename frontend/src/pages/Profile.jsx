@@ -61,23 +61,23 @@ export default function Profile() {
 
   return (
     <div className="page-container animate-fade-in">
-      <div className="modern-card" style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem' }}>
-        <div className="flex-between" style={{ flexWrap: 'wrap', gap: '2rem', marginBottom: '3rem' }}>
-          <div className="flex-item" style={{ gap: '1.5rem' }}>
+      <div className="modern-card profile-card" style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div className="flex-between flex-mobile-column" style={{ gap: '2rem', marginBottom: '3rem', alignItems: 'center', textAlign: 'center' }}>
+          <div className="flex-item flex-mobile-column" style={{ gap: '1.5rem', alignItems: 'center' }}>
             <img
               src={user.avatar || "https://ui-avatars.com/api/?name=" + (user.username || user.name) + "&background=random"}
               alt={`${user.username || user.name} avatar`}
               style={{ width: '90px', height: '90px', borderRadius: '50%', border: '2px solid var(--border-color)', objectFit: 'cover' }}
             />
-            <div>
+            <div style={{ textAlign: 'inherit' }}>
               <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Member profile</p>
-              <h1 style={{ fontSize: '2rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.25rem' }}>{user.username || user.name}</h1>
+              <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.25rem' }}>{user.username || user.name}</h1>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user.role === "business" ? "Business account" : "Community member"}</p>
             </div>
           </div>
 
-          <div className="flex-item" style={{ gap: '1rem' }}>
-            <div style={{ textAlign: 'right' }}>
+          <div className="flex-item flex-mobile-column" style={{ gap: '1.5rem', alignItems: 'center' }}>
+            <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Member since</p>
               <p style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-main)' }}>{joinedDate}</p>
             </div>
@@ -110,14 +110,14 @@ export default function Profile() {
 
         {user.role === 'business' && (
           <div style={{ marginTop: '4rem' }}>
-            <div className="flex-between" style={{ marginBottom: '2rem' }}>
+            <div className="flex-between flex-mobile-column" style={{ marginBottom: '2rem', gap: '1.5rem', alignItems: 'flex-start' }}>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <FiBriefcase style={{ color: 'var(--accent)' }} /> Manage Your Businesses
                 </h2>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>List and manage all your registered businesses</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>List and manage all your registered businesses</p>
               </div>
-              <Link to="/add-business" className="auth-button" style={{ width: 'auto', padding: '0.6rem 1.25rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to="/add-business" className="auth-button" style={{ width: '100%', maxWidth: '200px', padding: '0.6rem 1.25rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                 <FiPlus /> Add Business
               </Link>
             </div>
@@ -136,16 +136,16 @@ export default function Profile() {
             ) : (
               <div className="modern-grid" style={{ gridTemplateColumns: '1fr', gap: '1rem' }}>
                 {businesses.map((biz) => (
-                  <div key={biz._id} className="modern-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'transform 0.2s ease, background 0.2s ease' }}>
-                    <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                       <div style={{ width: '60px', height: '60px', borderRadius: '1rem', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, color: 'white' }}>
+                  <div key={biz._id} className="modern-card flex-between flex-mobile-column" style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.02)', gap: '1.5rem', alignItems: 'center' }}>
+                    <div className="flex-item flex-mobile-column" style={{ gap: '1.5rem', alignItems: 'center', textAlign: 'center' }}>
+                       <div style={{ width: '60px', height: '60px', borderRadius: '1rem', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>
                          {biz.name.charAt(0)}
                        </div>
-                       <div>
+                       <div style={{ textAlign: 'inherit' }}>
                          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.25rem' }}>{biz.name}</h3>
-                         <div style={{ display: 'flex', gap: '1rem' }}>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.6rem', borderRadius: '2rem' }}>{biz.category}</span>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{biz.address?.split(',').slice(0, 1).join('')}</span>
+                         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.6rem', borderRadius: '2rem' }}>{biz.category}</span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{biz.address?.split(',')[0]}</span>
                          </div>
                        </div>
                     </div>
@@ -153,21 +153,21 @@ export default function Profile() {
                     <div style={{ display: 'flex', gap: '0.75rem' }}>
                        <button 
                         onClick={() => navigate(`/business/${biz._id}`)}
-                        style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-main)', padding: '0.5rem', borderRadius: '0.75rem', cursor: 'pointer', transition: 'all 0.2s' }}
+                        style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-main)', padding: '0.6rem', borderRadius: '0.75rem', cursor: 'pointer', transition: 'all 0.2s' }}
                         title="View Details"
                        >
                          <FiExternalLink />
                        </button>
                        <button 
                         onClick={() => navigate(`/edit/${biz._id}`)}
-                        style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--accent)', padding: '0.5rem', borderRadius: '0.75rem', cursor: 'pointer', transition: 'all 0.2s' }}
+                        style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--accent)', padding: '0.6rem', borderRadius: '0.75rem', cursor: 'pointer', transition: 'all 0.2s' }}
                         title="Edit Business"
                        >
                          <FiEdit />
                        </button>
                        <button 
                         onClick={() => handleDelete(biz._id, biz.name)}
-                        style={{ border: '1px solid rgba(255, 69, 58, 0.2)', background: 'rgba(255, 69, 58, 0.05)', color: '#ff453a', padding: '0.5rem', borderRadius: '0.75rem', cursor: 'pointer', transition: 'all 0.2s' }}
+                        style={{ border: '1px solid rgba(255, 69, 58, 0.2)', background: 'rgba(255, 69, 58, 0.05)', color: '#ff453a', padding: '0.6rem', borderRadius: '0.75rem', cursor: 'pointer', transition: 'all 0.2s' }}
                         title="Delete Business"
                        >
                          <FiTrash2 />

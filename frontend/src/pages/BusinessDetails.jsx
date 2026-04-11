@@ -72,8 +72,8 @@ export default function BusinessDetails() {
       {/* Header */}
       <div className="modern-card" style={{ marginBottom: '2rem' }}>
         <div className="flex-between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1.5rem' }}>
-          <div>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.25rem' }}>{business.name}</h1>
+          <div style={{ flex: '1', minWidth: '100%' }}>
+            <h1 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.5rem' }}>{business.name}</h1>
             <p className="badge-minimal badge-blue">{business.category}</p>
           </div>
           <div className="flex-item" style={{ gap: '1rem' }}>
@@ -95,19 +95,21 @@ export default function BusinessDetails() {
         
         <p style={{ margin: '1.5rem 0', color: 'var(--text-muted)', lineHeight: 1.6 }}>{business.description}</p>
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
           <a href={`https://maps.google.com/?q=${business.location?.coordinates[1]},${business.location?.coordinates[0]}`} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-main)', textDecoration: 'none' }}>
             <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '0.5rem' }}><MapPin size={16} /></div> 
             <span style={{ fontSize: '0.9rem' }}>{business.address}</span>
           </a>
-          <a href={`tel:${business.phone}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-main)', textDecoration: 'none' }}>
-            <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '0.5rem' }}><Phone size={16} /></div> 
-            <span style={{ fontSize: '0.9rem' }}>{business.phone}</span>
-          </a>
-          <a href={`mailto:${business.email}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-main)', textDecoration: 'none' }}>
-            <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '0.5rem' }}><Mail size={16} /></div> 
-            <span style={{ fontSize: '0.9rem' }}>{business.email}</span>
-          </a>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem' }}>
+            <a href={`tel:${business.phone}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-main)', textDecoration: 'none' }}>
+              <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '0.5rem' }}><Phone size={16} /></div> 
+              <span style={{ fontSize: '0.9rem' }}>{business.phone}</span>
+            </a>
+            <a href={`mailto:${business.email}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-main)', textDecoration: 'none' }}>
+              <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '0.5rem' }}><Mail size={16} /></div> 
+              <span style={{ fontSize: '0.9rem' }}>{business.email}</span>
+            </a>
+          </div>
         </div>
 
         {business.owner && (
@@ -145,16 +147,16 @@ export default function BusinessDetails() {
       <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 500 }}>Reviews</h2>
       
       {user && (
-        <form className="modern-card auth-form" onSubmit={handleReviewSubmit} style={{ marginBottom: '2rem', padding: '2rem' }}>
+        <form className="modern-card auth-form" onSubmit={handleReviewSubmit} style={{ marginBottom: '2rem', padding: '1.5rem' }}>
           <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Write a Review</h3>
-          <div className="flex-item" style={{ marginBottom: '1rem' }}>
+          <div className="flex-item" style={{ marginBottom: '1rem', flexWrap: 'wrap' }}>
             <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Rating:</label>
-            <select className="auth-input" style={{ width: '150px' }} value={newReview.rating} onChange={e => setNewReview({...newReview, rating: Number(e.target.value)})}>
+            <select className="auth-input" style={{ width: '100%', maxWidth: '150px' }} value={newReview.rating} onChange={e => setNewReview({...newReview, rating: Number(e.target.value)})}>
               {[5,4,3,2,1].map(num => <option key={num} value={num}>{num} Stars</option>)}
             </select>
           </div>
           <textarea className="auth-input" rows="3" placeholder="Share your experience..." value={newReview.comment} onChange={e => setNewReview({...newReview, comment: e.target.value})} required></textarea>
-          <button type="submit" className="auth-button" style={{ width: '200px' }}>Submit Review</button>
+          <button type="submit" className="auth-button" style={{ width: '100%', maxWidth: '200px' }}>Submit Review</button>
         </form>
       )}
 

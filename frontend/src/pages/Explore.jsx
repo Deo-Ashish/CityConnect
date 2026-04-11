@@ -36,34 +36,36 @@ export default function Explore() {
   );
 
   return (
-    <div className="page-container animate-fade-in" style={{ maxWidth: '1600px', height: 'calc(100vh - 80px)', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2.5fr', height: '100%', gap: '1.5rem' }}>
+    <div className="explore-container animate-fade-in">
+      <div className="explore-grid">
         
         {/* Sidebar List */}
-        <div style={{ overflowY: 'auto', paddingRight: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '500', marginBottom: '0.5rem' }}>Nearby Businesses</h2>
-          {businesses.length === 0 ? (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No businesses found nearby.</p>
-          ) : (
-            businesses.map(biz => (
-              <Link to={`/business/${biz._id}`} key={biz._id} className="modern-card" style={{ padding: '1.25rem', textDecoration: 'none' }}>
-                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: 'var(--text-main)' }}>{biz.name}</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>{biz.category}</p>
-                <div className="flex-between">
-                  <span className="badge-minimal badge-neutral">
-                    <Star size={12} style={{ marginRight: '4px' }} /> {biz.rating} ({biz.reviewsCount})
-                  </span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    View &rarr;
-                  </span>
-                </div>
-              </Link>
-            ))
-          )}
+        <div className="explore-sidebar">
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '500', marginBottom: '1rem' }}>Nearby Businesses</h2>
+          <div className="explore-list">
+            {businesses.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No businesses found nearby.</p>
+            ) : (
+              businesses.map(biz => (
+                <Link to={`/business/${biz._id}`} key={biz._id} className="modern-card explore-card">
+                  <h3 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: 'var(--text-main)' }}>{biz.name}</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>{biz.category}</p>
+                  <div className="flex-between">
+                    <span className="badge-minimal badge-neutral">
+                      <Star size={12} style={{ marginRight: '4px' }} /> {biz.rating} ({biz.reviewsCount})
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      View &rarr;
+                    </span>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
         
         {/* Map View */}
-        <div style={{ borderRadius: '1.25rem', overflow: 'hidden', border: '1px solid var(--border-color)', background: 'var(--surface)' }}>
+        <div className="explore-map-wrapper">
           <MapContainer center={[location.lat, location.lng]} zoom={12} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'

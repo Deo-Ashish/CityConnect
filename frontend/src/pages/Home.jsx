@@ -76,17 +76,18 @@ export default function Home() {
           <h1 className="hero-title">Discover Hyper-Local Services</h1>
           <p className="hero-subtitle">Find the best plumbers, cafes, and tutors near you instantly.</p>
 
-          <div className="location-selector">
+          <div className="location-selector flex-mobile-column">
             <div className="location-badge">
               <MapPin size={16} />
               <span>Near: <strong>{loading ? 'Locating...' : (location?.name || 'Current Location')}</strong></span>
             </div>
             
-            <div className="city-input-container">
+            <div className="city-input-container" style={{ width: '100%', maxWidth: '300px' }}>
               <input 
                 type="text" 
                 placeholder="Change city..." 
                 className="city-input" 
+                style={{ width: '100%' }}
                 value={cityInput} 
                 onChange={e => { setCityInput(e.target.value); setIsTyping(true); }} 
               />
@@ -117,10 +118,11 @@ export default function Home() {
                  type="text" 
                  placeholder="Search for 'electrician', 'pizza'..." 
                  className="search-input"
+                 style={{ fontSize: '0.95rem', padding: '0.8rem 1.25rem' }}
                  value={searchQuery}
                  onChange={e => setSearchQuery(e.target.value)}
                />
-               <button type="submit" className="search-button">
+               <button type="submit" className="search-button" style={{ width: '50px', height: '50px' }}>
                  <Search size={18} />
                </button>
              </div>
