@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { FiLoader, FiArrowRight, FiUser, FiBriefcase } from "react-icons/fi";
+import { API_BASE } from "../services/api";
 import { useState } from "react";
 
 const ROLES = [
@@ -51,7 +52,7 @@ const Register = () => {
       const registerData = { ...rest, role: selectedRole };
 
       // Register the user
-      const res = await fetch("http://localhost:5001/api/auth/register", {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(registerData),

@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Trash2, Edit2, Plus, Shield, Users, Briefcase, Grid } from 'lucide-react';
+import { API_BASE } from '../services/api';
 
 export default function AdminPortal() {
   const { user, loading } = useAuth();
@@ -23,7 +24,7 @@ export default function AdminPortal() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/admin/users', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+      const res = await axios.get(`${API_BASE}/admin/users`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       setUsers(res.data);
     } catch { 
       console.error('Failed to fetch users'); 
@@ -32,7 +33,7 @@ export default function AdminPortal() {
 
   const fetchBusinesses = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/business', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+      const res = await axios.get(`${API_BASE}/business`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       setBusinesses(res.data);
     } catch { 
       console.error('Failed to fetch businesses'); 
@@ -41,7 +42,7 @@ export default function AdminPortal() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/categories');
+      const res = await axios.get(`${API_BASE}/categories`);
       setCategories(res.data);
     } catch { 
       console.error('Failed to fetch categories'); 
@@ -60,7 +61,7 @@ export default function AdminPortal() {
   const handleDeleteUser = async (id) => {
     if(!window.confirm("Are you sure you want to permanently delete this user and all their data?")) return;
     try {
-      await axios.delete(`http://localhost:5001/api/admin/users/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+      await axios.delete(`${API_BASE}/admin/users/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchUsers();
     } catch { 
       alert('Failed to delete'); 
@@ -74,7 +75,7 @@ export default function AdminPortal() {
     else if(currentRole === 'admin') newRole = 'user';
 
     try {
-      await axios.put(`http://localhost:5001/api/admin/users/${id}`, { role: newRole }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+      await axios.put(`${API_BASE}/admin/users/${id}`, { role: newRole }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchUsers();
     } catch { 
       alert('Failed to update role'); 
@@ -84,7 +85,7 @@ export default function AdminPortal() {
   const handleDeleteBusiness = async (id) => {
     if(!window.confirm("Delete this business permanently?")) return;
     try {
-      await axios.delete(`http://localhost:5001/api/admin/business/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+      await axios.delete(`${API_BASE}/admin/business/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchBusinesses();
     } catch { 
       alert('Failed to delete'); 
@@ -94,7 +95,7 @@ export default function AdminPortal() {
   const handleAddCategory = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/admin/categories', newCategory, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+      await axios.post(`${API_BASE}/admin/categories`, newCategory, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       setNewCategory({ name: '', icon: 'star', slug: '' });
       fetchCategories();
     } catch { 
@@ -105,7 +106,7 @@ export default function AdminPortal() {
   const handleDeleteCategory = async (id) => {
     if(!window.confirm("Delete this category?")) return;
     try {
-      await axios.delete(`http://localhost:5001/api/admin/categories/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+      await axios.delete(`${API_BASE}/admin/categories/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       fetchCategories();
     } catch { 
       alert('Failed to delete'); 

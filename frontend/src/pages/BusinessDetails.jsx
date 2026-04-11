@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MapPin, Phone, Mail, Star, User, Trash2, Edit, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { API_BASE } from '../services/api';
 
 export default function BusinessDetails() {
   const { id } = useParams();
@@ -15,11 +16,11 @@ export default function BusinessDetails() {
   const [loadingAI, setLoadingAI] = useState(false);
 
   const fetchBusinessData = useCallback(() => {
-    axios.get(`http://localhost:5001/api/business/${id}`).then(res => setBusiness(res.data)).catch(console.error);
-    axios.get(`http://localhost:5001/api/review/${id}`).then(res => setReviews(res.data)).catch(console.error);
+    axios.get(`${API_BASE}/business/${id}`).then(res => setBusiness(res.data)).catch(console.error);
+    axios.get(`${API_BASE}/review/${id}`).then(res => setReviews(res.data)).catch(console.error);
     
     setLoadingAI(true);
-    axios.get(`http://localhost:5001/api/business/${id}/ai-summary`)
+    axios.get(`${API_BASE}/business/${id}/ai-summary`)
       .then(res => setAiSummary(res.data.summary))
       .catch(() => setAiSummary("Insights currently unavailable."))
       .finally(() => setLoadingAI(false));
@@ -34,7 +35,7 @@ export default function BusinessDetails() {
     if (!user) return alert('Must be logged in');
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5001/api/review', { businessId: id, ...newReview }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${API_BASE}/review`, { businessId: id, ...newReview }, { headers: { Authorization: `Bearer ${token}` } });
       setNewReview({ rating: 5, comment: '' });
       fetchBusinessData();
     } catch (err) {
@@ -46,7 +47,7 @@ export default function BusinessDetails() {
     if (!window.confirm('Delete this review?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5001/api/review/${reviewId}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${API_BASE}/review/${reviewId}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchBusinessData();
     } catch (err) {
       alert(err.response?.data?.message || 'Error deleting review');
@@ -57,7 +58,7 @@ export default function BusinessDetails() {
     if (!window.confirm('Delete this entire business and all reviews? This cannot be undone.')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5001/api/business/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${API_BASE}/business/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       navigate('/explore');
     } catch (err) {
       alert(err.response?.data?.message || 'Error deleting business');

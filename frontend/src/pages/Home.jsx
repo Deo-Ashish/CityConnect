@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Search, MapPin, Grid, Star } from 'lucide-react';
 import useLocation from '../hooks/useLocation';
+import { API_BASE } from '../services/api';
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -35,7 +36,7 @@ export default function Home() {
   }, [cityInput, isTyping]);
   
   useEffect(() => {
-    axios.get('http://localhost:5001/api/categories').then(res => {
+    axios.get(`${API_BASE}/categories`).then(res => {
       if (res.data.length > 0) {
         setCategories(res.data);
       } else {
@@ -60,7 +61,7 @@ export default function Home() {
   useEffect(() => {
     if (location) {
       setLoadingServices(true);
-      const url = `http://localhost:5001/api/search/nearby?lat=${location.lat}&lng=${location.lng}&radius=${location.radius || 50}`;
+      const url = `${API_BASE}/search/nearby?lat=${location.lat}&lng=${location.lng}&radius=${location.radius || 50}`;
       axios.get(url)
         .then(res => setLocalServices(res.data.slice(0, 6)))
         .catch(console.error)

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, X, Bot, User, Sparkles } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE } from '../services/api';
 
 export default function AIChatAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function AIChatAssistant() {
       // For now, we utilize the same 'enhance search' or a dedicated chat endpoint if we had one.
       // Since we are building this incrementally, I'll redirect this to a new backend endpoint
       // We'll implement GET /api/ai/chat shortly.
-      const res = await axios.post('http://localhost:5001/api/ai/chat', { message: input });
+      const res = await axios.post(`${API_BASE}/ai/chat`, { message: input });
       setMessages(prev => [...prev, { role: 'assistant', text: res.data.response }]);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'assistant', text: "I'm having a bit of trouble connecting right now. Please try again later!" }]);

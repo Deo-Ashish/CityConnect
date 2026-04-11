@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import axios from 'axios';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Star } from 'lucide-react';
+import { API_BASE } from '../services/api';
 
 function MapUpdater({ center }) {
   const map = useMap();
@@ -21,7 +22,7 @@ export default function Explore() {
   useEffect(() => {
     if (location) {
       const q = searchParams.get('q') || searchParams.get('category') || '';
-      const url = `http://localhost:5001/api/search/nearby?lat=${location.lat}&lng=${location.lng}&radius=50${q ? `&q=${encodeURIComponent(q)}` : ''}`;
+      const url = `${API_BASE}/search/nearby?lat=${location.lat}&lng=${location.lng}&radius=50${q ? `&q=${encodeURIComponent(q)}` : ''}`;
       
       axios.get(url)
         .then(res => setBusinesses(res.data))
